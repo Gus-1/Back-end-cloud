@@ -2,7 +2,6 @@ const Router = require("express-promise-router");
 const router = new Router;
 const InscriptionController = require('../controleur/inscriptionController');
 const JWTMiddleWare = require("../middleware/IdentificationJWT");
-const AuthoMiddleware = require("../middleware/Authorization");
 
 //Post
 router.post('/', JWTMiddleWare.identification,InscriptionController.linkUserEvent);
@@ -12,5 +11,8 @@ router.delete('/:id', JWTMiddleWare.identification, InscriptionController.delete
 
 //Get
 router.get('/:id' ,InscriptionController.getEventFromUser);
+
+//Patch
+router.patch('/:id', InscriptionController.updateEventInscription);
 
 module.exports = router;

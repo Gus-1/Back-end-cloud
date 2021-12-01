@@ -73,6 +73,7 @@ module.exports.getEventFromUser = async (req, res) => {
 }
 
 module.exports.updateEventInscription = async(req, res) => {
+    const inscriptionId = req.params.id;
     let toUpdate = req.body;
     let doUpdate = false;
     const newData = {};
@@ -84,7 +85,7 @@ module.exports.updateEventInscription = async(req, res) => {
         newData.eventId = toUpdate.eventId;
         newData.userId = toUpdate.userId;
         try {
-            await InscriptionController.updateEventInscription(eventId, userId);
+            await InscriptionController.updateEventInscription(client, inscriptionId, newData.eventId, newData.userId);
             res.sendStatus(204);
         } catch (e) {
             console.error(e);

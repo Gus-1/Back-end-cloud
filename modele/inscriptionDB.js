@@ -10,7 +10,7 @@ module.exports.getEventFromUser = async(client, userId) => {
     return await client.query(`SELECT eventId FROM inscription WHERE userId = $1`, [userId]);
 }
 
-module.exports.updateEventInscription = async(client, eventId, userId) => {
+module.exports.updateEventInscription = async(client, inscriptionId, eventId, userId) => {
     const params = [];
     const querySet = [];
     let query = "UPDATE inscription SET ";
@@ -24,6 +24,7 @@ module.exports.updateEventInscription = async(client, eventId, userId) => {
     }
 
     query += querySet.join(',');
+    query += `WHERE inscriptionId = ${inscriptionId}`;
 
     return await client.query(query, params);
 }
