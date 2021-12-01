@@ -71,3 +71,26 @@ module.exports.getEventFromUser = async (req, res) => {
         client.release();
     }
 }
+
+module.exports.updateEventInscription = async(req, res) => {
+    let toUpdate = req.body;
+    let doUpdate = false;
+    const newData = {};
+
+    if (toUpdate.eventId !== undefined || toUpdate.userId !== undefined)
+        doUpdate = true;
+    if (doUpdate) {
+        const client = await pool.conect();
+        newData.eventId = toUpdate.eventId;
+        newData.userId = toUpdate.userId;
+        try {
+            await InscriptionController.updateEventInscription(eventId, userId);
+            res.sendStatus(204);
+        } catch (e) {
+            console.error(e);
+            res.sendStatus(500);
+        } finally {
+            client.release();
+        }
+    }
+}

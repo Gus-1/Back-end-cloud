@@ -56,7 +56,7 @@ module.exports.modifyEvent = async (client, gameCategoryId, eventDate, place, ev
 
     query += querySet.join(',');
 
-    return client.query(query, params);
+    return await client.query(query, params);
 }
 module.exports.verifyEvent = async(client, eventId, isVerify = true, adminMessage = null) => {
     return await client.query(`

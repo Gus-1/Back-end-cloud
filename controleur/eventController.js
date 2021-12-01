@@ -163,7 +163,7 @@ module.exports.modifyEvent = async(req, res) => {
             if(ownerId === reqId || req.session.authLevel === 'admin') {
                 await EventController.modifyEvent(client, eventId, newData.eventDate, newData.place,
                     newData.eventDescription, newData.nbMaxPlayer);
-                res.sendStatus(204)
+                res.sendStatus(204);
             } else {
                 res.sendStatus(403);
             }
