@@ -27,9 +27,18 @@ module.exports.linkUserEvent = async (req, res) => {
     const {userId, eventId} = req.body;
     const client = await pool.connect();
     try{
-        await InscriptionController.linkUserEvent(client, userId, eventId);
-        res.sendStatus(201);
+        await client.query("BEGIN;");
+        const isNotFull = await InscriptionController.isNotFull(client, eventId);
+        if(isNotFull){
+            await InscriptionController.linkUserEvent(client, userId, eventId);
+            await client.query("COMMIT");
+            res.sendStatus(201);
+        } else {
+          await client.query("ROLLBACK");
+          res.status(404).json({error: "Le nombre de participant a atteint le maximum"})
+        }
     } catch (e){
+        await client.query("ROLLBACK;");
         console.error(e);
         res.sendStatus(500);
     } finally {

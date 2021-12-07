@@ -34,6 +34,9 @@ module.exports.addUser = async (req, res) => {
     const {firstName, lastName, birthDate, email, password, photoPath} = req.body;
     const client = await pool.connect();
     try{
+        await client.query("BEGIN");
+        //todo : query pour savoir si l'id existe
+
         await UserController.addUser(client, firstName, lastName, birthDate, email, password, photoPath);
         res.sendStatus(201);
     } catch (e){
