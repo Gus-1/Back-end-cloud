@@ -6,7 +6,7 @@ module.exports.modifyUser = async (client, userId, firstName, name, birthDate, p
     const params = [];
     const querySet = [];
     let query = "UPDATE users SET ";
-    if(firstName !== undefined) {d
+    if(firstName !== undefined) {
         params.push(firstName);
         querySet.push(` firstName = $${params.length} `);
     }
@@ -51,7 +51,8 @@ module.exports.deleteUser = async(client, userId) => {
 
 // GET METHODS
 module.exports.getAllUsers = async(client) => {
-    return await client.query(`SELECT * FROM users`);
+    const result = await client.query(`SELECT * FROM users`);
+    return result.rows;
 }
 module.exports.getUserById = async(client, userId) => {
     return await client.query(`SELECT * FROM users WHERE userId = $1`, [userId]);
