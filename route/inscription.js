@@ -11,6 +11,7 @@ router.delete('/:id', JWTMiddleWare.identification, InscriptionController.delete
 
 //Get
 router.get('/:id' ,InscriptionController.getEventFromUser);
+router.get('/', InscriptionController.getAllInscription);
 
 //Patch
 router.patch('/:id', InscriptionController.updateEventInscription);

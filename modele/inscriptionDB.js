@@ -11,6 +11,12 @@ module.exports.getEventFromUser = async(client, userId) => {
     return result.rows;
 }
 
+module.exports.getAllInscription = async(client) => {
+    const result = await client.query(`select i.*, u.firstName, u.name, e.eventDescription
+        from inscription i join users u on i.userid = u.userid join event e on i.eventId = e.eventId`);
+    return result.rows;
+}
+
 module.exports.updateEventInscription = async(client, inscriptionId, eventId, userId) => {
     const params = [];
     const querySet = [];

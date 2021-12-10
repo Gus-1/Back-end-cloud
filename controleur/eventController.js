@@ -77,7 +77,7 @@ module.exports.deleteEvent = async (req, res) => {
 
 module.exports.getEvent = async (req, res) => {
     const eventId = req.params.id;
-    const client = pool.connect();
+    const client = await pool.connect();
     try{
         const result = await EventController.getEvent(client, eventId);
         res.json(result);
@@ -93,6 +93,7 @@ module.exports.getAllEvent = async (req, res) => {
     const client = await pool.connect();
     try{
         const result = await EventController.getAllEvent(client);
+        console.log(result);
         res.json(result);
     } catch (e) {
         console.error(e);
@@ -103,7 +104,7 @@ module.exports.getAllEvent = async (req, res) => {
 }
 
 module.exports.getEventOwner = async (req, res) => {
-    const client = pool.connect();
+    const client = await pool.connect();
     const eventId = req.params.id;
     try{
         const ownerId = await EventController.getEventOwner(client, eventId)

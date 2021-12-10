@@ -1,11 +1,11 @@
 DROP TABLE IF EXISTS address CASCADE;
 CREATE TABLE address (
-                              addressId integer primary key GENERATED ALWAYS AS IDENTITY,
-                              street varchar not null,
-                              number integer not null,
-                              city varchar not null,
-                              postalCode integer not null,
-                              country varchar not null
+                         addressId integer primary key GENERATED ALWAYS AS IDENTITY,
+                         street varchar not null,
+                         number integer not null,
+                         city varchar not null,
+                         postalCode integer not null,
+                         country varchar not null
 );
 
 DROP TABLE IF EXISTS gameCategory CASCADE;

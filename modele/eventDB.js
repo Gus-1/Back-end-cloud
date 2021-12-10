@@ -1,10 +1,12 @@
 //GET FUNCTION
 module.exports.getAllEvent = async(client) => {
-    const result = await client.query(`SELECT * FROM event`);
+    const result = await client.query(`select e.eventId, e.creatorId, e.gameCategoryId, e.creationDate, e.eventDate, a.street, a.number, a.country, a.city,
+       a.postalCode,  e.eventDescription, e.isVerified, e.nbMaxPlayer, e.adminMessage from event e join address a on e.place = a.addressId`);
     return result.rows;
 }
 module.exports.getEvent = async(client, eventId) => {
-    const result = await client.query(`SELECT * FROM event WHERE eventID = $1`, [eventId]);
+    const result = await client.query(`select e.eventId, e.creatorId, e.gameCategoryId, e.creationDate, e.eventDate, a.street, a.number, a.country, a.city,
+       a.postalCode,  e.eventDescription, e.isVerified, e.nbMaxPlayer, e.adminMessage from event e join address a on e.place = a.addressId WHERE eventID = $1`, [eventId]);
     return result.rows;
 }
 module.exports.getCreator = async(client, eventId) => {

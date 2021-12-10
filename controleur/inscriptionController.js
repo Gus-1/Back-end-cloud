@@ -81,6 +81,19 @@ module.exports.getEventFromUser = async (req, res) => {
     }
 }
 
+module.exports.getAllInscription = async (req, res) => {
+    const client = await pool.connect();
+    try{
+        const result = await InscriptionController.getAllInscription(client);
+        res.json(result);
+    } catch(e) {
+        console.error(e);
+        res.sendStatus(500);
+    } finally {
+        client.release();
+    }
+}
+
 module.exports.updateEventInscription = async(req, res) => {
     const inscriptionId = req.params.id;
     let toUpdate = req.body;
