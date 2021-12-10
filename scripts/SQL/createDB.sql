@@ -1,3 +1,13 @@
+DROP TABLE IF EXISTS address CASCADE;
+CREATE TABLE address (
+                              addressId integer primary key GENERATED ALWAYS AS IDENTITY,
+                              street varchar not null,
+                              number integer not null,
+                              city varchar not null,
+                              postalCode integer not null,
+                              country varchar not null
+);
+
 DROP TABLE IF EXISTS gameCategory CASCADE;
 CREATE TABLE gameCategory (
                               gameCategoryId integer primary key GENERATED ALWAYS AS IDENTITY,
@@ -24,7 +34,7 @@ CREATE TABLE event (
                        gameCategoryId integer REFERENCES gameCategory(gameCategoryId) DEFERRABLE INITIALLY IMMEDIATE,
                        creationDate date not null,
                        eventDate date not null,
-                       place varchar not null,
+                       place integer REFERENCES address(addressId) DEFERRABLE INITIALLY IMMEDIATE,
                        eventDescription varchar not null,
                        isVerified bit not null,
                        nbMaxPlayer integer not null,
@@ -46,6 +56,11 @@ CREATE TABLE message(
                         content varchar,
                         date varchar
 );
+
+INSERT INTO address (street, number, city, postalCode, country) values ('Rue Saint Remy', 4, 'Fosses-la-ville', 5070, 'Belgium');
+INSERT INTO address (street, number, city, postalCode, country) values ('Rue Joseph Calozet', 19, 'Namur', 5000, 'Belgium');
+INSERT INTO address (street, number, city, postalCode, country) values ('Rue du grand babin', 5, 'Malonne', 5010, 'Belgium'); -- Vérifier ces informations
+INSERT INTO address (street, number, city, postalCode, country) values ('Rue de Bruxelles', 10, 'Namur', 5000, 'Belgium');
 
 
 INSERT INTO gameCategory (label, description) values ('RPG', 'ROLE PLAY GAMES');
@@ -70,13 +85,13 @@ values ('Arnaud', 'Papp', '1994-05-29', CAST(0 as bit), 'arnaud.papp@gmail.com',
 
 
 INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
-    values (1, 3, NOW(), NOW() + interval '1 day' ,'Rue Joseph Calozet', 'Soirée seul', CAST(0 as bit), 1);
+    values (1, 3, NOW(), NOW() + interval '1 day' ,2, 'Soirée seul', CAST(0 as bit), 1);
 INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
-    values (1, 4, NOW(), NOW() + interval '4 day' ,'Rue Saint Remy', 'Soirée Yu Gi Oh', CAST(0 as bit), 8);
+    values (1, 4, NOW(), NOW() + interval '4 day' ,1, 'Soirée Yu Gi Oh', CAST(0 as bit), 8);
 INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
-    values (2, 6, NOW(), NOW() + interval '8 day' ,'3D Bar de Namur', 'Principalement Risk', CAST(0 as bit), 12);
+    values (2, 6, NOW(), NOW() + interval '8 day' ,3, 'Principalement Risk', CAST(0 as bit), 12);
 INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
-    values (3, 1, NOW(), NOW() + interval '10 hour' ,'3D Bar de Namur', 'Principalement Munchkin', CAST(0 as bit), 6);
+    values (3, 1, NOW(), NOW() + interval '10 hour' ,4, 'Principalement Munchkin', CAST(0 as bit), 6);
 
 
 --Ajout des personnes ayant créé l'évènement

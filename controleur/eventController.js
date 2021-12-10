@@ -90,7 +90,7 @@ module.exports.getEvent = async (req, res) => {
 }
 
 module.exports.getAllEvent = async (req, res) => {
-    const client = pool.connect();
+    const client = await pool.connect();
     try{
         const result = await EventController.getAllEvent(client);
         res.json(result);

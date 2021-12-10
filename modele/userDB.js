@@ -1,5 +1,4 @@
 const {getHash, compareHash} = require('../utils/utils');
-const {getUserByEmail} = require("./userDB");
 
 // UPDATE METHODS
 module.exports.modifyUser = async (client, userId, firstName, name, birthDate, password, photoPath) => {
@@ -55,22 +54,23 @@ module.exports.getAllUsers = async(client) => {
     return result.rows;
 }
 module.exports.getUserById = async(client, userId) => {
-    return await client.query(`SELECT * FROM users WHERE userId = $1`, [userId]);
+    const result = await client.query(`SELECT * FROM users WHERE userId = $1`, [userId]);
+    return result.rows;
 }
 async function getUsersByEmail (client, email) {
-    return await client.query(`SELECT * FROM users WHERE email = $1`, [email]);
+    const result = await client.query(`SELECT * FROM users WHERE email = $1`, [email]);
+    return result.rows[0];
 }
 module.exports.getUserByEmail = getUsersByEmail;
 
 module.exports.getUser = async(client, email, password) => {
     const user = await getUsersByEmail(client, email);
-    const userRow = user.rows[0];
-    if (! await compareHash(password, userRow.password))
+    if (! await compareHash(password, user.password))
         throw new Error("Not connected");
     return {
 
-        userType: userRow.isadmin ? "admin" : "user",
-        value: userRow
+        userType: user.isadmin ? "admin" : "user",
+        value: user
     }
 };
 

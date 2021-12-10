@@ -1,9 +1,16 @@
 //GET FUNCTION
-module.exports.getAllEvent = async(client) => {return await client.query(`SELECT * FROM event`);}
-module.exports.getEvent = async(client, eventId) => {return await client.query(`SELECT * FROM event WHERE eventID = $1`, [eventId]);}
+module.exports.getAllEvent = async(client) => {
+    const result = await client.query(`SELECT * FROM event`);
+    return result.rows;
+}
+module.exports.getEvent = async(client, eventId) => {
+    const result = await client.query(`SELECT * FROM event WHERE eventID = $1`, [eventId]);
+    return result.rows;
+}
 module.exports.getCreator = async(client, eventId) => {
-    return await client.query(`SELECT event.creatorId, event.eventId, user.userId FROM event JOIN user ON creatorId = userId 
+    const result = await client.query(`SELECT event.creatorId, event.eventId, user.userId FROM event JOIN user ON creatorId = userId 
                                 WHERE eventId = $1`, [eventId]);
+    return result.rows;
 }
 module.exports.getEventOwner = async(client, eventId) => {
     const result = await client.query(`SELECT creatorId, eventId FROM event WHERE eventId = $1`, [eventId]);

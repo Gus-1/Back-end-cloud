@@ -1,8 +1,7 @@
-const {getHash} = require("../utils/utils");
-
 //GET METHODS
 module.exports.getAllCategory = async(client) => {
-    return await client.query(`SELECT * FROM gameCategory`);
+    const result = await client.query(`SELECT * FROM gameCategory`);
+    return result.rows;
 }
 
 //UPDATE METHODS
