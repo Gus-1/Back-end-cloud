@@ -31,6 +31,7 @@ module.exports.insertEvent = async (client, userId, gameCategoryId, date, place,
 
 //DELETE FUNCTION
 module.exports.deleteEvent = async(client, eventId) => {
+    await client.query(`DELETE FROM address WHERE addressid in (SELECT place from event where eventid = $1)`, [eventId])
     await client.query(`DELETE FROM inscription WHERE eventId = $1`, [eventId]);
     return await client.query(`
         DELETE FROM event WHERE eventId = $1`, [eventId]);
