@@ -30,11 +30,11 @@ CREATE TABLE users (
 DROP TABLE IF EXISTS event CASCADE;
 CREATE TABLE event (
                        eventId integer primary key GENERATED ALWAYS AS IDENTITY,
-                       creatorId integer REFERENCES users(userId) DEFERRABLE INITIALLY IMMEDIATE,
-                       gameCategoryId integer REFERENCES gameCategory(gameCategoryId) DEFERRABLE INITIALLY IMMEDIATE,
+                       creatorId integer REFERENCES users(userId) ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE,
+                       gameCategoryId integer REFERENCES gameCategory(gameCategoryId) ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE,
                        creationDate date not null,
                        eventDate date not null,
-                       place integer REFERENCES address(addressId) DEFERRABLE INITIALLY IMMEDIATE,
+                       place integer REFERENCES address(addressId) ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE,
                        eventDescription varchar not null,
                        isVerified bit not null,
                        nbMaxPlayer integer not null,
@@ -44,17 +44,17 @@ CREATE TABLE event (
 DROP TABLE IF EXISTS inscription CASCADE;
 CREATE TABLE inscription(
                             inscriptionId integer primary key GENERATED ALWAYS AS IDENTITY,
-                            eventId integer REFERENCES event(eventId) DEFERRABLE INITIALLY IMMEDIATE not null,
-                            userId integer REFERENCES users(userId) DEFERRABLE INITIALLY IMMEDIATE not null
+                            eventId integer REFERENCES event(eventId) ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE not null,
+                            userId integer REFERENCES users(userId) ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE not null
 );
 
 DROP TABLE IF EXISTS message CASCADE;
 CREATE TABLE message(
                         messageId integer primary key GENERATED ALWAYS AS IDENTITY,
-                        sendId integer,
-                        eventId integer,
-                        content varchar,
-                        date varchar
+                        sendId integer REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE not null,
+                        eventId integer REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE not null ,
+                        content varchar not null,
+                        date varchar not null
 );
 
 INSERT INTO address (street, number, city, postalCode, country) values ('Rue Saint Remy', 4, 'Fosses-la-ville', 5070, 'Belgium');
@@ -82,7 +82,9 @@ values ('Valentin', 'Delmoitié', '2000-09-20', CAST(0 as bit), 'valentin.delmoi
 INSERT INTO users (firstName, name, birthDate, isAdmin, email, password, photoPath)
 values ('Arnaud', 'Papp', '1994-05-29', CAST(0 as bit), 'arnaud.papp@gmail.com',
         '$2b$10$0.RcdiGJVWFXUJib9WweeuXJV8EW7yMwX71q643ndOUXxr2BNa0Dq', 'c:/photos/4');
-
+INSERT INTO users (firstName, name, birthDate, isAdmin, email, password, photoPath)
+values ('Evan', 'Colle', '1994-05-29', CAST(0 as bit), 'evan.colle@gmail.com',
+        '$2b$10$0.RcdiGJVWFXUJib9WweeuXJV8EW7yMwX71q643ndOUXxr2BNa0Dq', 'c:/photos/4');
 
 INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
     values (1, 3, NOW(), NOW() + interval '1 day' ,2, 'Soirée seul', CAST(0 as bit), 1);

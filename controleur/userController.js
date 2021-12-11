@@ -55,6 +55,7 @@ module.exports.addUser = async (req, res) => {
  *          description: L'utilisateur a été supprimé
  */
 module.exports.deleteUser = async(req, res) => {
+    //todo : Faire un rollBack si un problème apparait
     const id = req.params.id;
     const client = await pool.connect();
     try{

@@ -1,4 +1,5 @@
 const {getHash, compareHash} = require('../utils/utils');
+const {add} = require("nodemon/lib/rules");
 
 // UPDATE METHODS
 module.exports.modifyUser = async (client, userId, firstName, name, birthDate, password, photoPath) => {
@@ -45,7 +46,11 @@ module.exports.addUser = async (client, firstName, lastName, birthDate, email, p
 
 //DELETE METHODS
 module.exports.deleteUser = async(client, userId) => {
-    return await client.query(`DELETE FROM users WHERE userId = $1`, [userId]);
+    const resultAddressId = await client.query(`select addressId from address join event e on address.addressId = e.place where creatorId = $1;`, [userId]);
+    for (const address of resultAddressId.rows) {
+        await client.query(`delete from address where addressId = $1`, [address.addressid]);
+    }
+    await client.query(`delete from users where userId = $1`, [userId]);
 }
 
 // GET METHODS
