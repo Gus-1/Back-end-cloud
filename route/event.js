@@ -17,6 +17,8 @@ router.patch('/:id', JWTMiddleWare.identification, eventController.modifyEvent);
 //Get
 router.get('/:id', eventController.getEvent);
 router.get('/', eventController.getAllEvent);
+router.get('/user/:id', eventController.getAllEventByUser);
+router.get('/joined/:id', eventController.getAllJoinedEvent);
 
 
 module.exports = router;

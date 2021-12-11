@@ -93,7 +93,6 @@ module.exports.getAllEvent = async (req, res) => {
     const client = await pool.connect();
     try{
         const result = await EventController.getAllEvent(client);
-        console.log(result);
         res.json(result);
     } catch (e) {
         console.error(e);
@@ -103,6 +102,36 @@ module.exports.getAllEvent = async (req, res) => {
     }
 }
 
+module.exports.getAllEventByUser = async(req, res) => {
+    const userId = req.params.id;
+    const client = await pool.connect();
+    try{
+        const result = await EventController.getAllEventByUser(client, userId);
+        res.json(result);
+    } catch (e){
+        console.error(e);
+        res.sendStatus(404);
+    } finally {
+        client.release();
+    }
+}
+
+module.exports.getAllJoinedEvent = async(req, res) => {
+    const userId = req.params.id;
+    const client = await pool.connect();
+    try{
+        const result = await EventController.getAllJoinedEvent(client, userId);
+        res.json(result);
+    } catch (e){
+        console.error(e);
+        res.sendStatus(404);
+    } finally {
+        client.release();
+    }
+}
+
+
+//todo : Pas nécessaire jusqu'ici. Peut-on la supprimer ?
 module.exports.getEventOwner = async (req, res) => {
     const client = await pool.connect();
     const eventId = req.params.id;

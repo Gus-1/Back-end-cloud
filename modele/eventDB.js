@@ -18,6 +18,15 @@ module.exports.getEventOwner = async(client, eventId) => {
     const result = await client.query(`SELECT creatorId, eventId FROM event WHERE eventId = $1`, [eventId]);
     return result.rows[0].creatorid;
 }
+module.exports.getAllEventByUser = async(client, userId) => {
+    const result = await client.query(`select * from event where creatorId = $1`, [userId]);
+    return result.rows;
+}
+module.exports.getAllJoinedEvent = async(client, userId) =>{
+    const result = await client.query(`select * from event join inscription i on event.eventid = i.eventid join users u on i.userid = u.userid where u.userid = $1`, [userId]);
+    return result.rows;
+}
+
 
 //POST FUNCTION
 module.exports.insertEvent = async (client, userId, gameCategoryId, date, place, eventDescription, nbMaxPlayer) => {
@@ -32,6 +41,7 @@ module.exports.insertEvent = async (client, userId, gameCategoryId, date, place,
 //DELETE FUNCTION
 module.exports.deleteEvent = async(client, eventId) => {
     await client.query(`DELETE FROM address WHERE addressid in (SELECT place from event where eventid = $1)`, [eventId])
+    await client.query(`DELETE FROM message WHERE eventid = $1`, [eventId]);
     await client.query(`DELETE FROM inscription WHERE eventId = $1`, [eventId]);
     return await client.query(`
         DELETE FROM event WHERE eventId = $1`, [eventId]);
