@@ -70,6 +70,7 @@ module.exports.getUserByEmail = getUsersByEmail;
 
 module.exports.getUser = async(client, email, password) => {
     const user = await getUsersByEmail(client, email);
+    console.log(user);
     if (! await compareHash(password, user.password))
         throw new Error("Not connected");
     return {

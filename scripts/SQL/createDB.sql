@@ -71,7 +71,7 @@ INSERT INTO gameCategory (label, description) values ('Dungeon crawler', 'Dungeo
 INSERT INTO gameCategory (label, description) values ('Wargame', 'Type: Warhammer 40000, Risk, ...');
 
 INSERT INTO users (firstName, name, birthDate, isAdmin, email, password, photoPath)
-    values ('Christophe', 'Bernard', '2001-02-20', CAST(1 as bit), 'christophe.bernard@henallux.be',
+    values ('Christophe', 'Bernard', '2001-02-20', CAST(1 as bit), 'f',
     '$2b$10$dGDvoKk29sETHESXK0H54eG/xwu2dWJL8NnAQWMEeKkrceitKyXou', 'c:/photos/1');
 INSERT INTO users (firstName, name, birthDate, isAdmin, email, password, photoPath)
     values ('Maxence', 'Delbrouck', '1999-10-25', CAST(0 as bit), 'maxence.n@gmail.com',

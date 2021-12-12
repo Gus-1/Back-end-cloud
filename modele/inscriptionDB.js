@@ -42,3 +42,8 @@ module.exports.isNotFull = async(client, eventId) => {
 
     return (resultQuantity.rows[0].count < resultMax.rows[0].nbmaxplayer);
 }
+
+module.exports.inscriptionExist = async(client, userId, eventId) => {
+    const result = await client.query(`SELECT * from inscription where (userid = $1 and eventid = $2)`, [userId, eventId]);
+    return (result.rows[0] !== undefined);
+}

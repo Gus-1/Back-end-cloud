@@ -65,7 +65,7 @@ module.exports.deleteEvent = async (req, res) => {
             await EventController.deleteEvent(client, eventId);
             res.sendStatus(204);
         }else{
-            res.sendStatus(403)
+            res.sendStatus(403);
         }
     } catch (e) {
         console.error(e);

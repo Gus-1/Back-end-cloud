@@ -117,3 +117,17 @@ module.exports.updateEventInscription = async(req, res) => {
         }
     }
 }
+
+module.exports.inscriptionExist = async(req, res) => {
+    const {userId, eventId} = req.body;
+    const client = await pool.connect();
+    try {
+        const result = await InscriptionController.inscriptionExist(client, userId, eventId);
+        res.json(result);
+    } catch(e){
+        console.log(e);
+        res.sendStatus(404);
+    } finally {
+        client.release();
+    }
+}
