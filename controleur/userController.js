@@ -1,4 +1,5 @@
 const UserController = require('../modele/userDB');
+const EventController = require('../modele/eventDB');
 const pool = require('../modele/database');
 const jwt = require("jsonwebtoken");
 
@@ -16,7 +17,7 @@ module.exports.login = async (req, res) => {
             const payload = {status : userType, value: {userid, firstname, name, birthdate, email, photopath}}
             const token = jwt.sign(
                 payload,
-                "qwertyuiopasdfghjklzxcvbnm123456",
+                "qwertyuiopasdfghjklzxcvbnm123456", //Ma secret ne fonctionne pas ici, why?
                 {expiresIn: '1d'}
             );
             res.json(token);
@@ -29,17 +30,17 @@ module.exports.login = async (req, res) => {
     }
 }
 
-//todo:  Faire une transaction pour éviter un saut d'id
 module.exports.addUser = async (req, res) => {
     const {firstName, lastName, birthDate, email, password, photoPath} = req.body;
     const client = await pool.connect();
     try{
+        //Eviter le saut d'id grace à la transaction (cas ou email deja utilisée par exemple)
         await client.query("BEGIN");
-        //todo : query pour savoir si l'id existe
-
         await UserController.addUser(client, firstName, lastName, birthDate, email, password, photoPath);
+        await client.query("COMMIT");
         res.sendStatus(201);
     } catch (e){
+        await client.query("ROLLBACK");
         console.error(e);
         res.sendStatus(500);
     } finally {
@@ -59,9 +60,13 @@ module.exports.deleteUser = async(req, res) => {
     const id = req.params.id;
     const client = await pool.connect();
     try{
+        await client.query("BEGIN");
+        await EventController.deleteUsersEvent(client, id);
         await UserController.deleteUser(client, id);
+        await client.query("COMMIT");
         res.sendStatus(204);
     } catch (e){
+        await client.query("ROLLBACK");
         console.error(e);
         res.sendStatus(404);
     } finally {

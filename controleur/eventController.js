@@ -1,5 +1,9 @@
 const EventController = require('../modele/eventDB');
+const AddressController = require('../modele/addressDB');
+const MessageController = require('../modele/messageDB');
+const InscriptionController = require('../modele/inscriptionDB');
 const pool = require('../modele/database');
+const {add} = require("nodemon/lib/rules");
 
 /**
  * @swagger
@@ -35,12 +39,17 @@ const pool = require('../modele/database');
  *                              - nbMaxPlayer
  */
 module.exports.insertEvent = async (req, res) => {
-    const {creatorId, gameCategoryId, eventDate, place, eventDescription, nbMaxPlayer} = req.body;
+    const {creatorId, gameCategoryId, eventDate, eventDescription, nbMaxPlayer, street, number, city,
+        postalCode, country} = req.body;
     const client = await pool.connect();
     try{
-        await EventController.insertEvent(client, creatorId, gameCategoryId, eventDate, place, eventDescription, nbMaxPlayer);
+        await client.query("BEGIN");
+        const addressId = await AddressController.insertAddress(client, street, number, city, postalCode, country);
+        await EventController.insertEvent(client, creatorId, gameCategoryId, eventDate, addressId, eventDescription, nbMaxPlayer);
+        await client.query("COMMIT");
         res.sendStatus(201);
     } catch (e){
+        await client.query("ROLLBACK");
         console.error(e);
         res.sendStatus(500);
     } finally {
@@ -62,13 +71,23 @@ module.exports.deleteEvent = async (req, res) => {
     try{
         const ownerId = await EventController.getEventOwner(client, eventId);
         if (reqId === ownerId || req.session.authLevel === 'admin'){ //Vérification si Admin ou Créateur de l'event
+            await client.query(`BEGIN`);
+
+            //Suppression de tout ce qui est lié à un event
+            await AddressController.deleteAddressWithEvent(client, eventId);
+            await MessageController.deleteMessageWithEvent(client, eventId);
+            await InscriptionController.deleteAllFromEvent(client, eventId);
+            //Suppression de l'event
             await EventController.deleteEvent(client, eventId);
+
+            await client.query("COMMIT");
             res.sendStatus(204);
         }else{
             res.sendStatus(403);
         }
     } catch (e) {
         console.error(e);
+        await client.query(`ROLLBACK`);
         res.sendStatus(500);
     } finally {
         client.release();
@@ -93,7 +112,10 @@ module.exports.getAllEvent = async (req, res) => {
     const client = await pool.connect();
     try{
         const result = await EventController.getAllEvent(client);
-        res.json(result);
+        if(result.length !== 0)
+            res.json(result);
+        else
+            res.sendStatus(404);
     } catch (e) {
         console.error(e);
         res.sendStatus(404);
@@ -173,32 +195,56 @@ module.exports.getEventOwner = async (req, res) => {
  */
 module.exports.modifyEvent = async(req, res) => {
     const reqId = req.session.id
-    let doUpdate = false;
+    let doUpdateEvent = false;
+    let doUpdateAddress = false;
     let toUpdate = req.body;
     const eventId = req.params.id;
     const newData = {};
+
     if (toUpdate.eventDate !== undefined || toUpdate.place !== undefined || toUpdate.eventDescription !== undefined ||
         toUpdate.nbMaxPlayer !== undefined || toUpdate.gameCategoryId !== undefined) {
-        doUpdate = true;
+        doUpdateEvent = true;
     }
-    if (doUpdate){
+    if(toUpdate.street !== undefined || toUpdate.number !== undefined || toUpdate.city !== undefined ||
+        toUpdate.postCode !== undefined || toUpdate.country !== undefined)
+        doUpdateAddress = true;
+
+    if (doUpdateEvent || doUpdateAddress){
+        if(doUpdateEvent){
+            newData.gameCategoryId = toUpdate.gameCategoryId;
+            newData.eventDate = toUpdate.eventDate;
+            newData.eventDescription = toUpdate.eventDescription;
+            newData.nbMaxPlayer = toUpdate.nbMaxPlayer;
+        }
+        if(doUpdateAddress){
+            newData.street = toUpdate.street;
+            newData.number = toUpdate.number;
+            newData.city = toUpdate.city;
+            newData.postCode = toUpdate.postCode;
+            newData.country = toUpdate.country;
+        }
+
         const client = await pool.connect();
-        newData.gameCategoryId = toUpdate.gameCategoryId;
-        newData.eventDate = toUpdate.eventDate;
-        newData.place = toUpdate.place;
-        newData.eventDescription = toUpdate.eventDescription;
-        newData.nbMaxPlayer = toUpdate.nbMaxPlayer;
         try{
             const ownerId = await EventController.getEventOwner(client, eventId);
             if(ownerId === reqId || req.session.authLevel === 'admin') {
-                await EventController.modifyEvent(client, eventId, newData.eventDate, newData.place,
-                    newData.eventDescription, newData.nbMaxPlayer);
+                await client.query(`BEGIN`);
+
+                const result = await EventController.getEvent(client, eventId);
+                if(doUpdateEvent)
+                await EventController.modifyEvent(client, eventId, newData.gameCategoryId, newData.eventDate, newData.eventDescription, newData.nbMaxPlayer);
+                if(doUpdateAddress)
+                await AddressController.updateAddress(client, result[0].addressid, newData.street, newData.number, newData.city, newData.postCode, newData.country);
+
+                await client.query(`COMMIT`);
+
                 res.sendStatus(204);
             } else {
                 res.sendStatus(403);
             }
         } catch (e){
             console.error(e);
+            await client.query(`ROLLBACK`);
             res.sendStatus(500)
         }finally {
             client.release();

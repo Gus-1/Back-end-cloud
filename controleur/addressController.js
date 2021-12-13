@@ -5,10 +5,13 @@ module.exports.insertAddress = async(req, res) => {
     const {street, number, city, postCode, country} = req.body;
     const client = await pool.connect();
     try{
+        await client.query(`BEGIN`);
         await AddressController.insertAddress(client, street, number, city, postCode, country);
+        await client.query(`COMMIT`);
         res.sendStatus(201);
     } catch (e){
         console.error(e);
+        await client.query(`ROLLBACK`);
         res.sendStatus(500);
     } finally {
         client.release();
@@ -50,7 +53,7 @@ module.exports.deleteAddress = async (req, res) => {
         res.sendStatus(204);
     } catch(e){
         console.error(e);
-        res.sendStatus(403) //todo : Véfifier cette erreur
+        res.sendStatus(403);
     } finally {
         client.release();
     }

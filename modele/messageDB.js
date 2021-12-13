@@ -9,6 +9,9 @@ module.exports.sendMessage = async (client, sender, receiver, content) => {
 module.exports.deleteMessage = async(client, messageId) => {
     return await client.query(`DELETE FROM message WHERE messageId = $1`, [messageId]);
 }
+module.exports.deleteMessageWithEvent = async (client, eventid) => {
+    return await client.query(`DELETE FROM message WHERE eventId = $1`, [eventid]);
+}
 
 //UPDATE METHODS
 module.exports.modifyMessage = async(client, messageId, content) => {

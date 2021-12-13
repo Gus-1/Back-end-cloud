@@ -1,12 +1,28 @@
 //GET FUNCTION
 module.exports.getAllEvent = async(client) => {
-    const result = await client.query(`select e.eventId, e.creatorId, e.gameCategoryId, e.creationDate, e.eventDate, a.street, a.number, a.country, a.city,
-       a.postalCode,  e.eventDescription, e.isVerified, e.nbMaxPlayer, e.adminMessage from event e join address a on e.place = a.addressId`);
+    const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
+                                              u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
+                                              g.gamecategoryid, g.label, g.description,
+                                              a.addressid, a.street, a.number, a.city, a.postalcode, a.country
+                                       FROM event e
+                                                join users u on e.creatorid = u.userid
+                                                join gamecategory g on e.gamecategoryid = g.gamecategoryid
+                                                join address a on e.place = a.addressid `);
     return result.rows;
 }
+
+
 module.exports.getEvent = async(client, eventId) => {
-    const result = await client.query(`select e.eventId, e.creatorId, e.gameCategoryId, e.creationDate, e.eventDate, a.street, a.number, a.country, a.city,
-       a.postalCode,  e.eventDescription, e.isVerified, e.nbMaxPlayer, e.adminMessage from event e join address a on e.place = a.addressId WHERE eventID = $1`, [eventId]);
+    const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
+                                              u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
+                                              g.gamecategoryid, g.label, g.description,
+                                              a.addressid, a.street, a.number, a.city, a.postalcode, a.country
+                                       FROM event e
+                                                join users u on e.creatorid = u.userid
+                                                join gamecategory g on e.gamecategoryid = g.gamecategoryid
+                                                join address a on e.place = a.addressid
+                                       WHERE eventid = $1
+    `, [eventId]);
     return result.rows;
 }
 module.exports.getCreator = async(client, eventId) => {
@@ -19,7 +35,15 @@ module.exports.getEventOwner = async(client, eventId) => {
     return result.rows[0].creatorid;
 }
 module.exports.getAllEventByUser = async(client, userId) => {
-    const result = await client.query(`select * from event where creatorId = $1`, [userId]);
+    const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
+                                              u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
+                                              g.gamecategoryid, g.label, g.description,
+                                              a.addressid, a.street, a.number, a.city, a.postalcode, a.country
+                                       FROM event e
+                                                join users u on e.creatorid = u.userid
+                                                join gamecategory g on e.gamecategoryid = g.gamecategoryid
+                                                join address a on e.place = a.addressid
+                                       WHERE u.userId = $1`, [userId]);
     return result.rows;
 }
 module.exports.getAllJoinedEvent = async(client, userId) =>{
@@ -40,16 +64,16 @@ module.exports.insertEvent = async (client, userId, gameCategoryId, date, place,
 
 //DELETE FUNCTION
 module.exports.deleteEvent = async(client, eventId) => {
-    await client.query(`DELETE FROM address WHERE addressid in (SELECT place from event where eventid = $1)`, [eventId])
-    await client.query(`DELETE FROM message WHERE eventid = $1`, [eventId]);
-    await client.query(`DELETE FROM inscription WHERE eventId = $1`, [eventId]);
     return await client.query(`
         DELETE FROM event WHERE eventId = $1`, [eventId]);
+}
+module.exports.deleteUsersEvent = async(client, userId) => {
+    await client.query(`DELETE FROM event WHERE creatorid = $1`, [userId]);
 }
 
 
 //UPDATE FUNCTION
-module.exports.modifyEvent = async (client, gameCategoryId, eventDate, place, eventDescription, nbMaxPlayer) => {
+module.exports.modifyEvent = async (client, eventId, gameCategoryId, eventDate, eventDescription, nbMaxPlayer) => {
     const params = [];
     const querySet = [];
     let query = "UPDATE event SET ";
@@ -61,10 +85,6 @@ module.exports.modifyEvent = async (client, gameCategoryId, eventDate, place, ev
         params.push(eventDate);
         querySet.push(` eventDate = $${params.length} `);
     }
-    if(place !== undefined) {
-        params.push(place);
-        querySet.push(` place = $${params.length} `);
-    }
     if(eventDescription !== undefined) {
         params.push(eventDescription);
         querySet.push(` eventDescription = $${params.length} `);
@@ -73,8 +93,8 @@ module.exports.modifyEvent = async (client, gameCategoryId, eventDate, place, ev
         params.push(nbMaxPlayer);
         querySet.push(` nbMaxPlayer = $${params.length} `);
     }
-
     query += querySet.join(',');
+    query += `WHERE eventid = ${eventId}`;
 
     return await client.query(query, params);
 }
