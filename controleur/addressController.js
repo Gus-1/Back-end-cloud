@@ -1,6 +1,64 @@
 const AddressController = require('../modele/addressDB');
 const pool = require('../modele/database');
 
+
+/**
+ *@swagger
+ *components:
+ *  schemas:
+ *      Address:
+ *          type: object
+ *          properties:
+ *              addressId:
+ *                  type: integer
+ *              street:
+ *                  type: string
+ *                  description: nom de la rue
+ *              number:
+ *                  type: integer
+ *              city:
+ *                  type: string
+ *                  description: nom de la ville
+ *              postalcode:
+ *                  type: integer
+ *              country:
+ *                  type: string
+ *                  description: nom du pays
+ */
+
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      AdresseAjoute:
+ *          description: L'adresse a été ajoutée
+ *
+ *  requestBodies:
+ *      AdresseAAjoute:
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          street:
+ *                              type: string
+ *                          number:
+ *                              type: integer
+ *                          city:
+ *                              type: string
+ *                          postCode:
+ *                              type: integer
+ *                          country:
+ *                              type: string
+ *
+ *                      required:
+ *                          - street
+ *                          - number
+ *                          - city
+ *                          - postCode
+ *                          - country
+ */
 module.exports.insertAddress = async(req, res) => {
     const {street, number, city, postCode, country} = req.body;
     const client = await pool.connect();
@@ -18,6 +76,19 @@ module.exports.insertAddress = async(req, res) => {
     }
 }
 
+
+
+/**
+ * @swagger
+ * components:
+ *  responses:
+ *      AddressFound:
+ *           description: renvoie toutes les addresses dans un tableau
+ *           content:
+ *               application/json:
+ *                   schema:
+ *                       $ref: '#/components/schemas/Produit'
+ */
 module.exports.getAllAddress = async(req, res) => {
     const client = await pool.connect();
     try{
@@ -31,6 +102,18 @@ module.exports.getAllAddress = async(req, res) => {
     }
 }
 
+
+/**
+ * @swagger
+ * components:
+ *  responses:
+ *      AddressFound:
+ *           description: renvoie un produit
+ *           content:
+ *               application/json:
+ *                   schema:
+ *                       $ref: '#/components/schemas/Produit'
+ */
 module.exports.getAddress = async(req, res) => {
     const addressId = req.params.id;
     const client = await pool.connect();
@@ -45,6 +128,14 @@ module.exports.getAddress = async(req, res) => {
     }
 }
 
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      AddressDeleted:
+ *          description: l'addresse a été supprimée
+ */
 module.exports.deleteAddress = async (req, res) => {
     const addressId = req.params.id;
     const client = await pool.connect();
@@ -59,6 +150,33 @@ module.exports.deleteAddress = async (req, res) => {
     }
 }
 
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      AddressUpdated:
+ *          description: l'adresse a été mise à jour
+ *  requestBodies:
+ *      ProduitAUpdate:
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          id:
+ *                              type: integer
+ *                          street:
+ *                              type: string
+ *                          number:
+ *                              type: integer
+ *                          city:
+ *                              type: string
+ *                          postcode:
+ *                              type: integer
+ *                          country:
+ *                              type: string
+ */
 module.exports.updateAddress = async(req, res) => {
     let doUpdate = false;
     let toUpdate = req.body;

@@ -4,6 +4,11 @@ module.exports.getAllCategory = async(client) => {
     return result.rows;
 }
 
+module.exports.getCategoryById = async(client, categoryId) => {
+    const result = await client.query(`SELECT * FROM gameCategory WHERE gameCategoryId = $1`, [categoryId]);
+    return result.rows;
+}
+
 //UPDATE METHODS
 module.exports.updateCategory = async(client, gameCategoryId, label, description) => {
     const params = [];

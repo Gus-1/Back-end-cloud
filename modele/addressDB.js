@@ -1,5 +1,6 @@
 //GET FUNCTION
 const {rows} = require("pg/lib/defaults");
+
 module.exports.getAddress = async(client, addressId) => {
     const result = await client.query(`SELECT * FROM address WHERE addressId = $1`, [addressId]);
     return result.rows;

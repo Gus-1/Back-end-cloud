@@ -1,6 +1,24 @@
 const GameCategoryDB = require ('../modele/gameCategoryDB');
 const pool = require('../modele/database');
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      Produit:
+ *          type: object
+ *          properties:
+ *              gameCategoryId:
+ *                  type: integer
+ *              label:
+ *                  type: string
+ *                  description: titre de la catégorie
+ *              description:
+ *                  type: string
+ *                  description: description de la catégorie
+ *
+ */
+
 
 /**
  * @swagger
@@ -37,6 +55,7 @@ module.exports.insertCategory = async (req, res) => {
     }
 }
 
+
 /**
  *@swagger
  *components:
@@ -44,6 +63,7 @@ module.exports.insertCategory = async (req, res) => {
  *      CategoryDeleted:
  *          description: La catégorie a été supprimée
  */
+//todo : Pour l'instant, la suppression d'une catégorie supprime aussi les évènements lié à cette catégorie
 module.exports.deleteCategory = async (req, res) => {
     const gameCategoryId = req.params.id;
     const client = await pool.connect();
@@ -58,6 +78,18 @@ module.exports.deleteCategory = async (req, res) => {
     }
 }
 
+
+/**
+ * @swagger
+ * components:
+ *  responses:
+ *      CategoryFound:
+ *           description: renvoie un tableau de toutes les catégoies
+ *           content:
+ *               application/json:
+ *                   schema:
+ *                       $ref: '#/components/schemas/Produit'
+ */
 module.exports.getAllCategory = async(req, res) => {
     const client = await pool.connect();
     try{
@@ -71,6 +103,39 @@ module.exports.getAllCategory = async(req, res) => {
     }
 }
 
+module.exports.getCategoryById = async (req, res) => {
+    const client = await pool.connect();
+    const id = req.params.id;
+    try {
+        const result = await GameCategoryDB.getCategoryById(client, id);
+        res.json(result);
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(404);
+    } finally {
+        client.release();
+    }
+}
+
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      CategoryUpdated:
+ *          description: la catégorie a été mise à jour
+ *  requestBodies:
+ *      CategoryUpdate:
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          label:
+ *                              type: string
+ *                          description:
+ *                              type: string
+ */
 module.exports.updateCategory = async (req, res) => {
     let doUpdate = false;
     let toUpdate = req.body;

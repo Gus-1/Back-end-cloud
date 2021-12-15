@@ -1,4 +1,5 @@
 const process = require('process');
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
 module.exports.identification = async (req, res, next) => {
@@ -6,7 +7,7 @@ module.exports.identification = async (req, res, next) => {
     if (headerAuth !== undefined && headerAuth.includes("Bearer")){
         const jwtToken = headerAuth.split(' ')[1];
         try{
-            const decodedJwtToken = jwt.verify(jwtToken, "qwertyuiopasdfghjklzxcvbnm123456");
+            const decodedJwtToken = jwt.verify(jwtToken, process.env.SECRET_TOKEN);
             req.session = decodedJwtToken.value;
             req.session.authLevel = decodedJwtToken.status;
             next();

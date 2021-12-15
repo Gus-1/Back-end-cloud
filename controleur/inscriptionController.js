@@ -35,7 +35,7 @@ module.exports.linkUserEvent = async (req, res) => {
             res.sendStatus(201);
         } else {
           await client.query("ROLLBACK");
-          res.status(404).json({error: "Le nombre de participant a atteint le maximum"})
+          res.status(404).json({error: "Le nombre de participant a atteint le maximum"})  //todo: changer l'erreur
         }
     } catch (e){
         await client.query("ROLLBACK;");

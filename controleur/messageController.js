@@ -1,7 +1,7 @@
 const pool = require('../modele/database');
 const MessageController = require('../modele/messageDB');
 
-//todo: Possible de changer le sender par req.session.id ?
+
 module.exports.sendMessage = async (req, res) => {
     const {sender, receiver, content} = req.body;
     const client = await pool.connect();
@@ -28,10 +28,10 @@ module.exports.deleteMessage = async (req, res) => {
     const client = await pool.connect();
     try {
         await MessageController.deleteMessage(client, messageId);
-        res.sendStatus(204)
+        res.sendStatus(204);
     } catch (e) {
         console.error(e);
-        res.sendStatus(500)
+        res.sendStatus(500);
     } finally {
         client.release();
     }

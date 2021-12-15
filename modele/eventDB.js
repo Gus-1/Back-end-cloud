@@ -58,7 +58,7 @@ module.exports.insertEvent = async (client, userId, gameCategoryId, date, place,
     return await client.query(`
         INSERT INTO event(creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, 
                           nbMaxPlayer) VALUES
-        ($1, $2, $3, $4, $5, $6, $7, $8)`, [userId, gameCategoryId, new Date(), eventDate, place, eventDescription, 0, nbMaxPlayer]
+        ($1, $2, $3, $4, $5, $6, $7, $8)`, [userId, gameCategoryId, new Date(), eventDate, place, eventDescription, false, nbMaxPlayer]
     );
 }
 

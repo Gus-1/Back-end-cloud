@@ -35,13 +35,13 @@ module.exports.addAdmin = async (client, firstName, lastName, birthDate, email, 
     const date = new Date(birthDate);
     return await client.query(`
         INSERT INTO users(firstName, name, birthDate, isAdmin, email, password, photoPath) VALUES
-        ($1, $2, $3, $4, $5, $6, $7)`, [firstName, lastName, date, 1, email, await getHash(password), photoPath]);
+        ($1, $2, $3, $4, $5, $6, $7)`, [firstName, lastName, date, true, email, await getHash(password), photoPath]);
 }
 module.exports.addUser = async (client, firstName, lastName, birthDate, email, password, photoPath) => {
     const date = new Date(birthDate);
     return await client.query(`
         INSERT INTO users(firstName, name, birthDate, isAdmin, email, password, photoPath) VALUES
-        ($1, $2, $3, $4, $5, $6, $7)`, [firstName, lastName, date, 0, email, await getHash(password), photoPath]);
+        ($1, $2, $3, $4, $5, $6, $7)`, [firstName, lastName, date, false, email, await getHash(password), photoPath]);
 }
 
 //DELETE METHODS

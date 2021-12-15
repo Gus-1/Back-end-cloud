@@ -99,7 +99,40 @@ module.exports.getEvent = async (req, res) => {
     const client = await pool.connect();
     try{
         const result = await EventController.getEvent(client, eventId);
-        res.json(result);
+        console.log(result);
+        let mappingResult = {
+            eventid: result[0].eventid,
+            creationdate : result[0].creationdate,
+            eventdate : result[0].eventdate,
+            eventdescription : result[0].eventdescription,
+            isverified : result[0].isverified,
+            nbmaxplayer : result[0].nbmaxplayer,
+            adminmessage : result[0].adminmessage,
+            user : {
+                userid : result[0].userid,
+                firstname : result[0].firstname,
+                name : result[0].name,
+                birthdate : result[0].birthdate,
+                isadmin : result[0].isadmin,
+                email : result[0].email,
+                photopath : result[0].photopath
+            },
+            gamecategory : {
+                gamecategoryid : result[0].gamecategoryid,
+                label : result[0].label,
+                description : result[0].description
+            },
+            address : {
+                addressid : result[0].addressid,
+                street : result[0].street,
+                number : result[0].number,
+                city : result[0].city,
+                postalcode : result[0].postalcode,
+                country : result[0].country
+            }
+        }
+        console.log(mappingResult)
+        res.json(mappingResult);
     } catch (e){
         console.error(e);
         res.sendStatus(404);
@@ -112,8 +145,44 @@ module.exports.getAllEvent = async (req, res) => {
     const client = await pool.connect();
     try{
         const result = await EventController.getAllEvent(client);
-        if(result.length !== 0)
-            res.json(result);
+        if(result.length !== 0) {
+            mappingResult = [];
+            result.forEach(element => {
+                let mapping = {
+                    eventid: element.eventid,
+                    creationdate: element.creationdate,
+                    eventdate: element.eventdate,
+                    eventdescription: element.eventdescription,
+                    isverified: element.isverified,
+                    nbmaxplayer: element.nbmaxplayer,
+                    adminmessage: element.adminmessage,
+                    user: {
+                        userid: element.userid,
+                        firstname: element.firstname,
+                        name: element.name,
+                        birthdate: element.birthdate,
+                        isadmin: element.isadmin,
+                        email: element.email,
+                        photopath: element.photopath
+                    },
+                    gamecategory: {
+                        gamecategoryid: element.gamecategoryid,
+                        label: element.label,
+                        description: element.description
+                    },
+                    address: {
+                        addressid: element.addressid,
+                        street: element.street,
+                        number: element.number,
+                        city: element.city,
+                        postalcode: element.postalcode,
+                        country: element.country
+                    }
+                }
+                mappingResult.push(mapping);
+            });
+            res.json(mappingResult);
+        }
         else
             res.sendStatus(404);
     } catch (e) {
@@ -129,7 +198,46 @@ module.exports.getAllEventByUser = async(req, res) => {
     const client = await pool.connect();
     try{
         const result = await EventController.getAllEventByUser(client, userId);
-        res.json(result);
+        if(result.length !== 0) {
+            mappingResult = [];
+            result.forEach(element => {
+                let mapping = {
+                    eventid: element.eventid,
+                    creationdate: element.creationdate,
+                    eventdate: element.eventdate,
+                    eventdescription: element.eventdescription,
+                    isverified: element.isverified,
+                    nbmaxplayer: element.nbmaxplayer,
+                    adminmessage: element.adminmessage,
+                    user: {
+                        userid: element.userid,
+                        firstname: element.firstname,
+                        name: element.name,
+                        birthdate: element.birthdate,
+                        isadmin: element.isadmin,
+                        email: element.email,
+                        photopath: element.photopath
+                    },
+                    gamecategory: {
+                        gamecategoryid: element.gamecategoryid,
+                        label: element.label,
+                        description: element.description
+                    },
+                    address: {
+                        addressid: element.addressid,
+                        street: element.street,
+                        number: element.number,
+                        city: element.city,
+                        postalcode: element.postalcode,
+                        country: element.country
+                    }
+                }
+                mappingResult.push(mapping);
+            });
+            res.json(mappingResult);
+        }
+        else
+            res.sendStatus(404);
     } catch (e){
         console.error(e);
         res.sendStatus(404);
@@ -143,7 +251,46 @@ module.exports.getAllJoinedEvent = async(req, res) => {
     const client = await pool.connect();
     try{
         const result = await EventController.getAllJoinedEvent(client, userId);
-        res.json(result);
+        if(result.length !== 0) {
+            mappingResult = [];
+            result.forEach(element => {
+                let mapping = {
+                    eventid: element.eventid,
+                    creationdate: element.creationdate,
+                    eventdate: element.eventdate,
+                    eventdescription: element.eventdescription,
+                    isverified: element.isverified,
+                    nbmaxplayer: element.nbmaxplayer,
+                    adminmessage: element.adminmessage,
+                    user: {
+                        userid: element.userid,
+                        firstname: element.firstname,
+                        name: element.name,
+                        birthdate: element.birthdate,
+                        isadmin: element.isadmin,
+                        email: element.email,
+                        photopath: element.photopath
+                    },
+                    gamecategory: {
+                        gamecategoryid: element.gamecategoryid,
+                        label: element.label,
+                        description: element.description
+                    },
+                    address: {
+                        addressid: element.addressid,
+                        street: element.street,
+                        number: element.number,
+                        city: element.city,
+                        postalcode: element.postalcode,
+                        country: element.country
+                    }
+                }
+                mappingResult.push(mapping);
+            });
+            res.json(mappingResult);
+        }
+        else
+            res.sendStatus(404);
     } catch (e){
         console.error(e);
         res.sendStatus(404);
@@ -193,6 +340,7 @@ module.exports.getEventOwner = async (req, res) => {
  *                              gameCategoryId:
  *                                  type: integer
  */
+//todo : pour l'instant, si les deux tables ne sot pas modifiées, une erreur est créée
 module.exports.modifyEvent = async(req, res) => {
     const reqId = req.session.id
     let doUpdateEvent = false;

@@ -16,5 +16,6 @@ router.patch('/:id', JWTMiddleWare.identification, AuthoMiddleware.mustBeAdmin, 
 
 //Get
 router.get('/', gameCategoryController.getAllCategory);
+router.get('/:id', gameCategoryController.getCategoryById);
 
 module.exports = router;

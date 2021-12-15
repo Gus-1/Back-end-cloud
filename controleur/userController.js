@@ -2,8 +2,56 @@ const UserController = require('../modele/userDB');
 const EventController = require('../modele/eventDB');
 const pool = require('../modele/database');
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      User:
+ *          type: object
+ *          properties:
+ *              userid:
+ *                  type: integer
+ *              firstname:
+ *                  type: string
+ *                  description: prenom de l'utilisateur
+ *              name:
+ *                  type: string
+ *                  description: nom de l'utilisateur
+ *              birthdate:
+ *                  type: date
+ *                  description: date de naissance de l'utilisateur (YYYY-MM-DD)
+ *              isadmin:
+ *                  type: string
+ *                  description: est à 1 si l'utilisateur est un admin
+ *              email:
+ *                  type: string
+ *                  description: adresse email de l'utilisateur
+ *              password:
+ *                  type: string
+ *                  format: password
+ *              photopath:
+ *                  type: string
+ *                  description: chemin d'accès à sa photo
+ */
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      Login:
+ *          type: object
+ *          properties:
+ *              email:
+ *                  type: string
+ *              password:
+ *                  type: string
+ *                  format: password
+ *          required:
+ *              - email
+ *              - password
+ */
 module.exports.login = async (req, res) => {
     const {email, password} = req.body;
     if (email === undefined || password === undefined) {
@@ -17,7 +65,7 @@ module.exports.login = async (req, res) => {
             const payload = {status : userType, value: {userid, firstname, name, birthdate, email, photopath}}
             const token = jwt.sign(
                 payload,
-                "qwertyuiopasdfghjklzxcvbnm123456", //Ma secret ne fonctionne pas ici, why?
+                process.env.SECRET_TOKEN,
                 {expiresIn: '1d'}
             );
             res.json(token);
@@ -30,6 +78,38 @@ module.exports.login = async (req, res) => {
     }
 }
 
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      UtilisateurAjoute:
+ *          description: l'utilisateur a été ajouté
+ *  requestBodies:
+ *      UtilisateurAAjoute:
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          firstname:
+ *                              type: string
+ *                              description: prenom de l'utilisateur
+ *                          lastname:
+ *                              type: string
+ *                              description: nom de l'utilisateur
+ *                          birthdate:
+ *                              type: date
+ *                              description: date de naissance de l'utilisateur (YYYY-MM-DD)
+ *                          email:
+ *                              type: string
+ *                              description: adresse email de l'utilisateur
+ *                          password:
+ *                              type: string
+ *                              format: password
+ *                          photopath:
+ *                              type: string
+ *                              description: chemin d'accès à sa photo
+ */
 module.exports.addUser = async (req, res) => {
     const {firstName, lastName, birthDate, email, password, photoPath} = req.body;
     const client = await pool.connect();
@@ -56,7 +136,6 @@ module.exports.addUser = async (req, res) => {
  *          description: L'utilisateur a été supprimé
  */
 module.exports.deleteUser = async(req, res) => {
-    //todo : Faire un rollBack si un problème apparait dans la suppression de ses event, addresses, MESSAGES
     const id = req.params.id;
     const client = await pool.connect();
     try{
@@ -74,6 +153,31 @@ module.exports.deleteUser = async(req, res) => {
     }
 }
 
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      UtilisateurUpdated:
+ *          description: l'utilisateur a été mis à jour
+ *  requestBodies:
+ *      UtilisateurAUpdate:
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                           firstname:
+ *                               type: string
+ *                           name:
+ *                               type: string
+ *                           birthdate:
+ *                               type: date
+ *                           password:
+ *                               type: string
+ *                               format: password
+ *                           photopath:
+ *                               type: string
+ */
 module.exports.modifyUser = async(req, res) => {
     let doUpdate = false;
     let toUpdate = req.body;
@@ -110,6 +214,18 @@ module.exports.modifyUser = async(req, res) => {
     }
 }
 
+
+/**
+ * @swagger
+ * components:
+ *  responses:
+ *      UtilisateursFound:
+ *           description: renvoie tous les users dans un tableau
+ *           content:
+ *               application/json:
+ *                   schema:
+ *                       $ref: '#/components/schemas/User'
+ */
 module.exports.getAllUsers = async(req, res) => {
     const client = await pool.connect();
     try{
@@ -123,6 +239,17 @@ module.exports.getAllUsers = async(req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * components:
+ *  responses:
+ *      UtilisateurFound:
+ *           description: renvoie un utilisateur en fonction de son identifian
+ *           content:
+ *               application/json:
+ *                   schema:
+ *                       $ref: '#/components/schemas/User'
+ */
 module.exports.getUser = async(req, res) => {
     const userId = req.params.id;
     const client = await pool.connect();
