@@ -99,7 +99,6 @@ module.exports.getEvent = async (req, res) => {
     const client = await pool.connect();
     try{
         const result = await EventController.getEvent(client, eventId);
-        console.log(result);
         let mappingResult = {
             eventid: result[0].eventid,
             creationdate : result[0].creationdate,
@@ -292,6 +291,58 @@ module.exports.getAllJoinedEvent = async(req, res) => {
         else
             res.sendStatus(404);
     } catch (e){
+        console.error(e);
+        res.sendStatus(404);
+    } finally {
+        client.release();
+    }
+}
+
+module.exports.getAllPending = async(req, res) => {
+    const client = await pool.connect();
+    try{
+        const result = await EventController.getAllPending(client);
+        if(result.length !== 0) {
+            mappingResult = [];
+            result.forEach(element => {
+                let mapping = {
+                    eventid: element.eventid,
+                    creationdate: element.creationdate,
+                    eventdate: element.eventdate,
+                    eventdescription: element.eventdescription,
+                    isverified: element.isverified,
+                    nbmaxplayer: element.nbmaxplayer,
+                    adminmessage: element.adminmessage,
+                    user: {
+                        userid: element.userid,
+                        firstname: element.firstname,
+                        name: element.name,
+                        birthdate: element.birthdate,
+                        isadmin: element.isadmin,
+                        email: element.email,
+                        photopath: element.photopath
+                    },
+                    gamecategory: {
+                        gamecategoryid: element.gamecategoryid,
+                        label: element.label,
+                        description: element.description
+                    },
+                    address: {
+                        addressid: element.addressid,
+                        street: element.street,
+                        number: element.number,
+                        city: element.city,
+                        postalcode: element.postalcode,
+                        country: element.country
+                    }
+                }
+                mappingResult.push(mapping);
+            });
+            res.json(mappingResult);
+        }
+        else
+            res.sendStatus(404);
+    } catch (e) {
         console.error(e);
         res.sendStatus(404);
     } finally {

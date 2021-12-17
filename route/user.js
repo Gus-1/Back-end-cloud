@@ -13,7 +13,7 @@ router.post('/', userController.addUser);
 router.delete('/:id',  userController.deleteUser);
 
 //Update
-router.patch('/:id', userController.modifyUser);
+router.patch('/:id',JWTMiddleWare.identification, userController.modifyUser);
 
 //Get
 router.get('/', userController.getAllUsers);

@@ -15,11 +15,11 @@ module.exports.modifyUser = async (client, userId, firstName, name, birthDate, p
         querySet.push(` name = $${params.length} `);
     }
     if(birthDate !== undefined) {
-        params.push(birthDate.toISOString());
+        params.push(birthDate);
         querySet.push(` birthDate = $${params.length} `);
     }
     if(password !== undefined) {
-        params.push(getHash(password));
+        params.push(await getHash(password));
         querySet.push(` password = $${params.length} `);
     }
     if(photoPath !== undefined) {
@@ -27,6 +27,7 @@ module.exports.modifyUser = async (client, userId, firstName, name, birthDate, p
         querySet.push(` photoPath = $${params.length} `);
     }
     query += querySet.join(',');
+    query += ` WHERE userId = ${userId}`;
     return client.query(query, params);
 }
 

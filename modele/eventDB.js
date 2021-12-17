@@ -51,6 +51,19 @@ module.exports.getAllJoinedEvent = async(client, userId) =>{
     return result.rows;
 }
 
+module.exports.getAllPending = async(client) => {
+    const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
+                                              u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
+                                              g.gamecategoryid, g.label, g.description,
+                                              a.addressid, a.street, a.number, a.city, a.postalcode, a.country
+                                       FROM event e
+                                                join users u on e.creatorid = u.userid
+                                                join gamecategory g on e.gamecategoryid = g.gamecategoryid
+                                                join address a on e.place = a.addressid
+                                       WHERE isverified = false`);
+    return result.rows;
+}
+
 
 //POST FUNCTION
 module.exports.insertEvent = async (client, userId, gameCategoryId, date, place, eventDescription, nbMaxPlayer) => {

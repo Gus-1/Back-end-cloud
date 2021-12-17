@@ -47,8 +47,7 @@ module.exports.updateAddress = async (client, addressId, street, number, city, p
 
     query += querySet.join(',');
     query += ` WHERE addressId = ${addressId}`;
-    console.log(query)
-    console.log(params);
+
     return await client.query(query, params);
 }
 

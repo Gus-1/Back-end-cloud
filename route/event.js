@@ -15,6 +15,7 @@ router.delete('/:id', JWTMiddleWare.identification, eventController.deleteEvent)
 router.patch('/:id', JWTMiddleWare.identification, eventController.modifyEvent);
 
 //Get
+router.get('/pending/', eventController.getAllPending);
 router.get('/:id', eventController.getEvent);
 router.get('/', eventController.getAllEvent);
 router.get('/user/:id', eventController.getAllEventByUser);

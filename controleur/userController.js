@@ -184,7 +184,9 @@ module.exports.modifyUser = async(req, res) => {
     const idToUpdate = req.params.id;
     const newData = {};
 
-    if(idToUpdate === req.session.id || req.session.authLevel === "admin"){
+    console.log(req.session);
+
+    if(idToUpdate === req.session.userid || req.session.authLevel === "admin"){
         if (toUpdate.firstName !== undefined || toUpdate.name !== undefined ||
             toUpdate.birthDate !== undefined ||  toUpdate.password !== undefined || toUpdate.photoPath !== undefined){
             doUpdate = true;
