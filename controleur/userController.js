@@ -190,7 +190,7 @@ module.exports.modifyUser = async(req, res) => {
             doUpdate = true;
         }
         if (doUpdate){
-            const client = pool.connect();
+            const client = await pool.connect();
             newData.firstName = toUpdate.firstName;
             newData.name = toUpdate.name;
             newData.birthDate = toUpdate.birthDate;

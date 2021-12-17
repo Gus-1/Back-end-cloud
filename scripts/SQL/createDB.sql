@@ -71,27 +71,27 @@ INSERT INTO gameCategory (label, description) values ('Dungeon crawler', 'Dungeo
 INSERT INTO gameCategory (label, description) values ('Wargame', 'Type: Warhammer 40000, Risk, ...');
 
 INSERT INTO users (firstName, name, birthDate, isAdmin, email, password, photoPath)
-    values ('Christophe', 'Bernard', '2001-02-20', 'true', 'f',
+    values ('Christophe', 'Bernard', '2001-02-20', 'true', 'f@f',
     '$2b$10$dGDvoKk29sETHESXK0H54eG/xwu2dWJL8NnAQWMEeKkrceitKyXou', 'c:/photos/1');
 INSERT INTO users (firstName, name, birthDate, isAdmin, email, password, photoPath)
-    values ('Maxence', 'Delbrouck', '1999-10-25', 'true', 'maxence.n@gmail.com',
+    values ('Maxence', 'Delbrouck', '1999-10-25', 'false', 'maxence.n@gmail.com',
     '$2b$10$i0/Qwo7dASF.VgZd666AHepuJva8hKrabYG6RnQh8JVhD6dhwwmq2', 'c:/photos/2');
 INSERT INTO users (firstName, name, birthDate, isAdmin, email, password, photoPath)
-values ('Valentin', 'Delmoitié', '2000-09-20', 'true', 'valentin.delmoitié@gmail.com',
+values ('Valentin', 'Delmoitié', '2000-09-20', 'false', 'valentin.delmoitié@gmail.com',
         '$2b$10$yG.bchceSHPEJiMYy9CS4OpwKfvDxqUw.laBjIYgZdE6SA12a0BaG', 'c:/photos/3');
 INSERT INTO users (firstName, name, birthDate, isAdmin, email, password, photoPath)
-values ('Arnaud', 'Papp', '1994-05-29', 'true', 'arnaud.papp@gmail.com',
+values ('Arnaud', 'Papp', '1994-05-29', 'false', 'arnaud.papp@gmail.com',
         '$2b$10$0.RcdiGJVWFXUJib9WweeuXJV8EW7yMwX71q643ndOUXxr2BNa0Dq', 'c:/photos/4');
 INSERT INTO users (firstName, name, birthDate, isAdmin, email, password, photoPath)
-values ('Evan', 'Colle', '1994-05-29', 'true', 'evan.colle@gmail.com',
+values ('Evan', 'Colle', '1994-05-29', 'false', 'evan.colle@gmail.com',
         '$2b$10$0.RcdiGJVWFXUJib9WweeuXJV8EW7yMwX71q643ndOUXxr2BNa0Dq', 'c:/photos/4');
 
 INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
     values (1, 3, NOW(), NOW() + interval '1 day' ,2, 'Soirée seul', 'true', 1);
 INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
-    values (1, 4, NOW(), NOW() + interval '4 day' ,1, 'Soirée Yu Gi Oh', 'true', 8);
+    values (1, 4, NOW(), NOW() + interval '4 day' ,1, 'Soirée Yu Gi Oh', 'false', 8);
 INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
-    values (2, 6, NOW(), NOW() + interval '8 day' ,3, 'Principalement Risk', 'true', 12);
+    values (2, 6, NOW(), NOW() + interval '8 day' ,3, 'Principalement Risk', 'false', 12);
 INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
     values (3, 1, NOW(), NOW() + interval '10 hour' ,4, 'Principalement Munchkin', 'true', 6);
 

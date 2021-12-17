@@ -103,7 +103,8 @@ module.exports.updateEventInscription = async(req, res) => {
     if (toUpdate.eventId !== undefined || toUpdate.userId !== undefined)
         doUpdate = true;
     if (doUpdate) {
-        const client = await pool.conect();
+        const client = await pool.connect();
+
         newData.eventId = toUpdate.eventId;
         newData.userId = toUpdate.userId;
         try {

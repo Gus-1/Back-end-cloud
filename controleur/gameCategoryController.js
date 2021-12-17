@@ -45,10 +45,13 @@ module.exports.insertCategory = async (req, res) => {
     const {label, description} = req.body;
     const client = await pool.connect();
     try{
+        await client.query(`BEGIN`);
         await GameCategoryDB.insertCategory(client, label, description);
+        await client.query(`COMMIT`);
         res.sendStatus(201);
     } catch (e){
         console.error(e);
+        await client.query(`ROLLBACK`);
         res.sendStatus(500);
     } finally {
         client.release();
