@@ -54,10 +54,10 @@ module.exports.linkUserEvent = async (req, res) => {
  *          description: L'utilisateur a été supprimé de l'évenement
  */
 module.exports.deleteUserFromEvent = async(req, res) => {
-    const {userId, eventId} = req.body;
+    const inscriptionId = req.params.id;
     const client = await pool.connect();
     try{
-        await InscriptionController.deleteUserFromEvent(client, userId, eventId);
+        await InscriptionController.deleteInscription(client, inscriptionId);
         res.sendStatus(204);
     } catch (e) {
         console.error(e);

@@ -8,6 +8,9 @@ module.exports.deleteUserFromEvent = async(client, userId, eventId) => {
 module.exports.deleteAllFromEvent = async(client, eventId) => {
     return await client.query(`DELETE FROM inscription WHERE eventId = $1`, [eventId]);
 }
+module.exports.deleteInscription = async (client, inscriptionId) => {
+    return await client.query(`DELETE FROM inscription WHERE inscriptionId = $1`, [inscriptionId]);
+}
 
 module.exports.getEventFromUser = async(client, userId) => {
     const result = await client.query(`SELECT eventId FROM inscription WHERE userId = $1`, [userId]);
