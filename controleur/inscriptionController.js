@@ -126,7 +126,21 @@ module.exports.inscriptionExist = async(req, res) => {
         const result = await InscriptionController.inscriptionExist(client, userId, eventId);
         res.json(result);
     } catch(e){
-        console.log(e);
+        console.error(e);
+        res.sendStatus(404);
+    } finally {
+        client.release();
+    }
+}
+
+module.exports.getInscription = async (req, res) => {
+    const inscriptionId = req.params.id;
+    const client = await pool.connect();
+    try {
+        const result = await InscriptionController.getInscription(client, inscriptionId);
+        res.json(result);
+    } catch (e) {
+        console.error(e);
         res.sendStatus(404);
     } finally {
         client.release();

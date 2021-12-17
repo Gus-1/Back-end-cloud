@@ -43,12 +43,15 @@ module.exports.isNotFull = async(client, eventId) => {
     const resultQuantity = await client.query(`select count(*) from (select event.*, i.* from event join inscription i on event.eventid = i.eventid where (event.eventId = $1)) as result;`, [eventId]);
     const resultMax = await client.query(`select nbmaxplayer from event where eventid = $1`, [eventId]);
 
-    console.log(resultMax.rows[0]);
-
     return (resultQuantity.rows[0].count < resultMax.rows[0].nbmaxplayer);
 }
 
 module.exports.inscriptionExist = async(client, userId, eventId) => {
     const result = await client.query(`SELECT * from inscription where (userid = $1 and eventid = $2)`, [userId, eventId]);
     return (result.rows[0] !== undefined);
+}
+
+module.exports.getInscription = async (client, inscriptionId) => {
+    const result = await client.query(`SELECT * from inscription where (inscriptionid = $1)`, [inscriptionId]);
+    return result.rows;
 }
