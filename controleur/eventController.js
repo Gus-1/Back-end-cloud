@@ -110,7 +110,7 @@ module.exports.getEvent = async (req, res) => {
             user : {
                 userid : result[0].userid,
                 firstname : result[0].firstname,
-                name : result[0].name,
+                lastname : result[0].name,
                 birthdate : result[0].birthdate,
                 isadmin : result[0].isadmin,
                 email : result[0].email,
@@ -158,7 +158,7 @@ module.exports.getAllEvent = async (req, res) => {
                     user: {
                         userid: element.userid,
                         firstname: element.firstname,
-                        name: element.name,
+                        lastname: element.name,
                         birthdate: element.birthdate,
                         isadmin: element.isadmin,
                         email: element.email,
@@ -211,7 +211,7 @@ module.exports.getAllEventByUser = async(req, res) => {
                     user: {
                         userid: element.userid,
                         firstname: element.firstname,
-                        name: element.name,
+                        lastname: element.name,
                         birthdate: element.birthdate,
                         isadmin: element.isadmin,
                         email: element.email,
@@ -264,7 +264,7 @@ module.exports.getAllJoinedEvent = async(req, res) => {
                     user: {
                         userid: element.userid,
                         firstname: element.firstname,
-                        name: element.name,
+                        lastname: element.name,
                         birthdate: element.birthdate,
                         isadmin: element.isadmin,
                         email: element.email,
@@ -316,7 +316,7 @@ module.exports.getAllPending = async(req, res) => {
                     user: {
                         userid: element.userid,
                         firstname: element.firstname,
-                        name: element.name,
+                        lastname: element.name,
                         birthdate: element.birthdate,
                         isadmin: element.isadmin,
                         email: element.email,

@@ -111,12 +111,12 @@ module.exports.login = async (req, res) => {
  *                              description: chemin d'accès à sa photo
  */
 module.exports.addUser = async (req, res) => {
-    const {firstName, lastName, birthDate, email, password, photoPath} = req.body;
+    const {firstname, lastname, birthdate, email, password, photopath} = req.body;
     const client = await pool.connect();
     try{
         //Eviter le saut d'id grace à la transaction (cas ou email deja utilisée par exemple)
         await client.query("BEGIN");
-        await UserController.addUser(client, firstName, lastName, birthDate, email, password, photoPath);
+        await UserController.addUser(client, firstname, lastname, birthdate, email, password, photopath);
         await client.query("COMMIT");
         res.sendStatus(201);
     } catch (e){
