@@ -187,20 +187,20 @@ module.exports.modifyUser = async(req, res) => {
     console.log(req.session);
 
     if(idToUpdate === req.session.userid || req.session.authLevel === "admin"){
-        if (toUpdate.firstName !== undefined || toUpdate.name !== undefined ||
-            toUpdate.birthDate !== undefined ||  toUpdate.password !== undefined || toUpdate.photoPath !== undefined){
+        if (toUpdate.firstname !== undefined || toUpdate.lastname !== undefined ||
+            toUpdate.birthdate !== undefined ||  toUpdate.password !== undefined || toUpdate.photopath !== undefined){
             doUpdate = true;
         }
         if (doUpdate){
             const client = await pool.connect();
-            newData.firstName = toUpdate.firstName;
-            newData.name = toUpdate.name;
-            newData.birthDate = toUpdate.birthDate;
+            newData.firstname = toUpdate.firstname;
+            newData.lastname = toUpdate.lastname;
+            newData.birthdate = toUpdate.birthdate;
             newData.password = toUpdate.password;
-            newData.photoPath = toUpdate.photoPath;
+            newData.photopath = toUpdate.photopath;
             try{
-                await UserController.modifyUser(client, idToUpdate, newData.firstName, newData.name, newData.birthDate,
-                    newData.password, newData.photoPath);
+                await UserController.modifyUser(client, idToUpdate, newData.firstname, newData.lastname, newData.birthdate,
+                    newData.password, newData.photopath);
                 res.sendStatus(204);
             } catch (e) {
                 console.error(e);

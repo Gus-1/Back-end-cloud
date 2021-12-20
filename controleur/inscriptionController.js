@@ -24,18 +24,42 @@ const InscriptionController = require('../modele/inscriptionDB');
  *                              - eventId
  */
 module.exports.linkUserEvent = async (req, res) => {
-    const {userId, eventId} = req.body;
+    const eventId = req.body.eventId;
+    let userId = req.body.userid
+    if (userId === undefined)
+        userId = req.session.userid;
     const client = await pool.connect();
     try{
         await client.query("BEGIN;");
         const isNotFull = await InscriptionController.isNotFull(client, eventId);
-        if(isNotFull){
+        const inscriptionExist = await InscriptionController.inscriptionExist(client, userId, eventId);
+        if (!isNotFull)
+            res.sendStatus(418).json({error: "Le nombre de participants à atteint sa limite"});
+        else if (inscriptionExist)
+            res.sendStatus(418).json({error: "L'inscription existe déjà"});
+        else {
+            await InscriptionController.linkUserEvent(client, userId, eventId);
+            await client.query("COMMIT;");
+            res.sendStatus(201);
+        }
+    } catch (e){
+        await client.query("ROLLBACK;");
+        console.error(e);
+        res.sendStatus(404);
+    } finally {
+        client.release();
+    }
+/*    try{
+        await client.query("BEGIN;");
+        const isNotFull = await InscriptionController.isNotFull(client, eventId);
+        const inscriptionExist = await InscriptionController.inscriptionExist(client, userId, eventId);
+        if(isNotFull && !inscriptionExist){
             await InscriptionController.linkUserEvent(client, userId, eventId);
             await client.query("COMMIT");
             res.sendStatus(201);
         } else {
           await client.query("ROLLBACK");
-          res.status(404).json({error: "Le nombre de participant a atteint le maximum"})  //todo: changer l'erreur
+          res.status(404).json({error: "Le nombre de participant a atteint le maximum"})
         }
     } catch (e){
         await client.query("ROLLBACK;");
@@ -43,7 +67,7 @@ module.exports.linkUserEvent = async (req, res) => {
         res.sendStatus(500);
     } finally {
         client.release();
-    }
+    }*/
 }
 
 /**
@@ -53,6 +77,7 @@ module.exports.linkUserEvent = async (req, res) => {
  *      UserRemoved:
  *          description: L'utilisateur a été supprimé de l'évenement
  */
+//todo : Nous pouvons avoir une error plus précise en indiquant que l'inscription d'existe pas
 module.exports.deleteUserFromEvent = async(req, res) => {
     const inscriptionId = req.params.id;
     const client = await pool.connect();

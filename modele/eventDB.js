@@ -11,7 +11,6 @@ module.exports.getAllEvent = async(client) => {
     return result.rows;
 }
 
-
 module.exports.getEvent = async(client, eventId) => {
     const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
                                               u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
@@ -47,7 +46,15 @@ module.exports.getAllEventByUser = async(client, userId) => {
     return result.rows;
 }
 module.exports.getAllJoinedEvent = async(client, userId) =>{
-    const result = await client.query(`select * from event join inscription i on event.eventid = i.eventid join users u on i.userid = u.userid where u.userid = $1`, [userId]);
+    const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
+                                              u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
+                                              g.gamecategoryid, g.label, g.description,
+                                              a.addressid, a.street, a.number, a.city, a.postalcode, a.country
+                                       FROM event e
+                                                join users u on e.creatorid = u.userid
+                                                join gamecategory g on e.gamecategoryid = g.gamecategoryid
+                                                join address a on e.place = a.addressid 
+                                       WHERE u.userid = $1`, [userId]);
     return result.rows;
 }
 

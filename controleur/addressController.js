@@ -59,17 +59,19 @@ const pool = require('../modele/database');
  *                          - postCode
  *                          - country
  */
+
+//todo : Pour des raisons inexplicables, le saut d'id se fait toujours
 module.exports.insertAddress = async(req, res) => {
     const {street, number, city, postCode, country} = req.body;
     const client = await pool.connect();
+    await client.query(`BEGIN;`);
     try{
-        await client.query(`BEGIN`);
         await AddressController.insertAddress(client, street, number, city, postCode, country);
-        await client.query(`COMMIT`);
+        await client.query(`COMMIT;`);
         res.sendStatus(201);
     } catch (e){
         console.error(e);
-        await client.query(`ROLLBACK`);
+        await client.query(`ROLLBACK;`);
         res.sendStatus(500);
     } finally {
         client.release();

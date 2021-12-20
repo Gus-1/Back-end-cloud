@@ -6,10 +6,13 @@ module.exports.sendMessage = async (req, res) => {
     const {sender, receiver, content} = req.body;
     const client = await pool.connect();
     try{
+        client.query("BEGIN;");
         await MessageController.sendMessage(client, sender, receiver, content);
         res.sendStatus(201);
+        client.query("COMMIT;");
     } catch (e) {
         console.error(e);
+        client.query("ROLLBACK;");
         res.sendStatus(500)
     } finally {
         client.release();
