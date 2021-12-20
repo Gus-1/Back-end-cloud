@@ -29,7 +29,7 @@ module.exports.linkUserEvent = async (req, res) => {
     if (userId === undefined)
         userId = req.session.userid;
     const client = await pool.connect();
-    try{
+    /*try{
         await client.query("BEGIN;");
         const isNotFull = await InscriptionController.isNotFull(client, eventId);
         const inscriptionExist = await InscriptionController.inscriptionExist(client, userId, eventId);
@@ -48,17 +48,17 @@ module.exports.linkUserEvent = async (req, res) => {
         res.sendStatus(404);
     } finally {
         client.release();
-    }
-/*    try{
+    }*/
+    try{
         await client.query("BEGIN;");
         const isNotFull = await InscriptionController.isNotFull(client, eventId);
         const inscriptionExist = await InscriptionController.inscriptionExist(client, userId, eventId);
         if(isNotFull && !inscriptionExist){
             await InscriptionController.linkUserEvent(client, userId, eventId);
-            await client.query("COMMIT");
+            await client.query("COMMIT;");
             res.sendStatus(201);
         } else {
-          await client.query("ROLLBACK");
+          await client.query("ROLLBACK;");
           res.status(404).json({error: "Le nombre de participant a atteint le maximum"})
         }
     } catch (e){
@@ -67,7 +67,7 @@ module.exports.linkUserEvent = async (req, res) => {
         res.sendStatus(500);
     } finally {
         client.release();
-    }*/
+    }
 }
 
 /**
