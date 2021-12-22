@@ -1,6 +1,7 @@
 const pool = require('../modele/database');
 const InscriptionController = require('../modele/inscriptionDB');
-
+const EventController = require('../modele/eventDB');
+const UserController = require('../modele/userDB');
 
 /**
  * @swagger
@@ -23,7 +24,6 @@ const InscriptionController = require('../modele/inscriptionDB');
  *                              - userId
  *                              - eventId
  */
-//todo : 404
 module.exports.linkUserEvent = async (req, res) => {
     const eventId = req.body.eventId;
     let userId = req.body.userid
@@ -34,17 +34,21 @@ module.exports.linkUserEvent = async (req, res) => {
     } else {
         const client = await pool.connect();
         try{
-            await client.query("BEGIN;");
-            const isNotFull = await InscriptionController.isNotFull(client, eventId);
-            const inscriptionExist = await InscriptionController.inscriptionExist(client, userId, eventId);
-            if (!isNotFull)
-                res.sendStatus(418).json({error: "Le nombre de participants a atteint sa limite"});
-            else if (inscriptionExist)
-                res.sendStatus(409).json({error: "L'inscription existe déjà"});
-            else {
-                await InscriptionController.linkUserEvent(client, userId, eventId);
-                await client.query("COMMIT;");
-                res.sendStatus(201);
+            if (await UserController.userExist(client, userId) && await EventController.eventExist(client, eventId)) {
+                await client.query("BEGIN;");
+                const isNotFull = await InscriptionController.isNotFull(client, eventId);
+                const inscriptionExist = await InscriptionController.inscriptionExist(client, userId, eventId);
+                if (!isNotFull)
+                    res.sendStatus(418).json({error: "Le nombre de participants a atteint sa limite"});
+                else if (inscriptionExist)
+                    res.sendStatus(409).json({error: "L'inscription existe déjà"});
+                else {
+                    await InscriptionController.linkUserEvent(client, userId, eventId);
+                    await client.query("COMMIT;");
+                    res.sendStatus(201);
+                }
+            } else {
+                res.sendStatus(404);
             }
         } catch (e){
             await client.query("ROLLBACK;");
@@ -54,7 +58,6 @@ module.exports.linkUserEvent = async (req, res) => {
             client.release();
         }
     }
-
 }
 
 
@@ -97,18 +100,26 @@ module.exports.unlinkUser = async (req, res) => {
  */
 //todo : Nous pouvons avoir une error plus précise en indiquant que l'inscription d'existe pas
 // todo : Replaced by UnlinkUser
-//todo : 404 et 400
+
 module.exports.deleteUserFromEvent = async(req, res) => {
     const inscriptionId = req.params.id;
     const client = await pool.connect();
-    try{
-        await InscriptionController.deleteInscription(client, inscriptionId);
-        res.sendStatus(204);
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(500);
-    } finally {
-        client.release();
+    if(isNaN(inscriptionId)){
+        res.sendStatus(400);
+    } else {
+        try {
+            if (await InscriptionController.inscriptionExist(client, inscriptionId)){
+                await InscriptionController.deleteInscription(client, inscriptionId);
+                res.sendStatus(204);
+            } else {
+                res.sendStatus(404);
+            }
+        } catch (e) {
+            console.error(e);
+            res.sendStatus(500);
+        } finally {
+            client.release();
+        }
     }
 }
 
@@ -147,7 +158,7 @@ module.exports.getAllInscription = async (req, res) => {
     }
 }
 
-//todo : 404
+
 module.exports.updateEventInscription = async(req, res) => {
     const inscriptionId = req.params.id;
     let toUpdate = req.body;
@@ -162,8 +173,12 @@ module.exports.updateEventInscription = async(req, res) => {
         newData.eventId = toUpdate.eventId;
         newData.userId = toUpdate.userId;
         try {
-            await InscriptionController.updateEventInscription(client, inscriptionId, newData.eventId, newData.userId);
-            res.sendStatus(204);
+            if (await InscriptionController.inscriptionExist(client, inscriptionId)){
+                await InscriptionController.updateEventInscription(client, inscriptionId, newData.eventId, newData.userId);
+                res.sendStatus(204);
+            } else {
+                res.sendStatus(404);
+            }
         } catch (e) {
             console.error(e);
             res.sendStatus(500);

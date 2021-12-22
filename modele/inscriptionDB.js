@@ -50,8 +50,8 @@ module.exports.isNotFull = async(client, eventId) => {
 }
 
 module.exports.inscriptionExist = async(client, userId, eventId) => {
-    const result = await client.query(`SELECT * from inscription where (userid = $1 and eventid = $2)`, [userId, eventId]);
-    return (result.rows[0] !== undefined);
+    const {rows} = await client.query(`SELECT count(inscriptionId) AS nbr FROM inscription WHERE userid = $1 and eventid = $2`, [userId, eventId]);
+    return rows[0].nbr > 0;
 }
 
 module.exports.getInscription = async (client, inscriptionId) => {

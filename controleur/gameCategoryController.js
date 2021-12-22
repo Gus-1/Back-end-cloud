@@ -72,7 +72,6 @@ module.exports.insertCategory = async (req, res) => {
  */
 // La suppression d'une catégorie supprime aussi les évènements lié.
 // Justification : Si une catégorie pose problème, nous supprimons donc tous les évènements qui y sont liés
-//todo : 404
 module.exports.deleteCategory = async (req, res) => {
     const gameCategoryId = req.params.id;
     if(isNaN(gameCategoryId)){
@@ -80,8 +79,12 @@ module.exports.deleteCategory = async (req, res) => {
     } else {
         const client = await pool.connect();
         try{
-            await GameCategoryDB.deleteCategory(client, gameCategoryId);
-            res.sendStatus(204);
+            if(!gameCategoryId.categoryExist (client, gameCategoryId)){
+                res.sendStatus(404);
+            } else {
+                await GameCategoryDB.deleteCategory(client, gameCategoryId);
+                res.sendStatus(204);
+            }
         } catch (e) {
             console.error(e);
             res.sendStatus(500);
@@ -120,7 +123,6 @@ module.exports.getAllCategory = async(req, res) => {
     }
 }
 
-//todo : ajouter une 404
 module.exports.getCategoryById = async (req, res) => {
     const client = await pool.connect();
     const id = req.params.id;
@@ -128,8 +130,12 @@ module.exports.getCategoryById = async (req, res) => {
         res.sendStatus(400);
     } else {
         try {
-            const {rows: result} = await GameCategoryDB.getCategoryById(client, id);
-            res.json(result);
+            if(!await GameCategoryDB.categoryExist(client, id)){
+                res.sendStatus(404);
+            }else {
+                const {rows: result} = await GameCategoryDB.getCategoryById(client, id);
+                res.json(result);
+            }
         } catch (e) {
             console.error(e);
             res.sendStatus(500);
@@ -158,7 +164,6 @@ module.exports.getCategoryById = async (req, res) => {
  *                          description:
  *                              type: string
  */
-//todo : 404
 module.exports.updateCategory = async (req, res) => {
     let doUpdate = false;
     let toUpdate = req.body;
@@ -172,8 +177,12 @@ module.exports.updateCategory = async (req, res) => {
         newData.label = toUpdate.label
         newData.description = toUpdate.description;
         try{
-            await GameCategoryDB.updateCategory(client, gameCategoryId, newData.label, newData.description);
-            res.sendStatus(204);
+            if(! await GameCategoryDB.categoryExist(client, gameCategoryId)){
+                res.sendStatus(404);
+            } else {
+                await GameCategoryDB.updateCategory(client, gameCategoryId, newData.label, newData.description);
+                res.sendStatus(204);
+            }
         } catch (e) {
             console.error(e);
             res.sendStatus(500);

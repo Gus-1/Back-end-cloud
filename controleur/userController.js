@@ -139,7 +139,6 @@ module.exports.addUser = async (req, res) => {
  *      UserDeleted:
  *          description: L'utilisateur a été supprimé
  */
-//todo : Voir si l'utilisateur existe et envoyer 404 sinon
 module.exports.deleteUser = async(req, res) => {
     const id = req.params.id;
     if(isNaN(id)){
@@ -147,11 +146,16 @@ module.exports.deleteUser = async(req, res) => {
     } else {
         const client = await pool.connect();
         try{
-            await client.query("BEGIN");
-            await EventController.deleteUsersEvent(client, id);
-            await UserController.deleteUser(client, id);
-            await client.query("COMMIT");
-            res.sendStatus(204);
+            if(await UserController.userExist(client, id)){
+                await client.query("BEGIN");
+                await EventController.deleteUsersEvent(client, id);
+                await UserController.deleteUser(client, id);
+                await client.query("COMMIT");
+                res.sendStatus(204);
+            }
+            else {
+                res.sendStatus(404);
+            }
         } catch (e){
             await client.query("ROLLBACK");
             console.error(e);
@@ -187,7 +191,6 @@ module.exports.deleteUser = async(req, res) => {
  *                           photopath:
  *                               type: string
  */
-//todo Add 404
 module.exports.modifyUser = async(req, res) => {
     let doUpdate = false;
     let toUpdate = req.body;
@@ -207,9 +210,13 @@ module.exports.modifyUser = async(req, res) => {
             newData.password = toUpdate.password;
             newData.photopath = toUpdate.photopath;
             try{
-                await UserController.modifyUser(client, idToUpdate, newData.firstname, newData.lastname, newData.birthdate,
-                    newData.password, newData.photopath);
-                res.sendStatus(204);
+                if (await UserController.userExist(client, idToUpdate)){
+                    await UserController.modifyUser(client, idToUpdate, newData.firstname, newData.lastname, newData.birthdate,
+                        newData.password, newData.photopath);
+                    res.sendStatus(204);
+                } else {
+                    res.sendStatus(404);
+                }
             } catch (e) {
                 console.error(e);
                 res.sendStatus(500);

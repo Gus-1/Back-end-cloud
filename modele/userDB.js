@@ -81,7 +81,7 @@ module.exports.getUser = async(client, email, password) => {
 
 module.exports.userExist = async (client, idUser) => {
     const {rows} = await client.query(
-        "SELECT count(id) AS nbr FROM users WHERE userId = $1", [idUser]
+        "SELECT count(userId) AS nbr FROM users WHERE userId = $1", [idUser]
     );
     return rows[0].nbr > 0;
 }

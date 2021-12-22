@@ -37,3 +37,8 @@ module.exports.deleteCategory = async(client, gameCategoryId) => {
 module.exports.insertCategory = async(client, label, description) => {
     return await client.query(`INSERT INTO gameCategory(label, description) VALUES ($1, $2)`, [label, description]);
 }
+
+module.exports.categoryExist = async (client, categoryId) => {
+    const {rows} = await client.query(`SELECT count(gameCategoryId) AS nbr FROM gameCategory WHERE gameCategoryId = $1`, [categoryId]);
+    return rows[0].nbr > 0;
+}
