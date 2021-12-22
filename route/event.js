@@ -15,11 +15,11 @@ router.delete('/:id', JWTMiddleWare.identification, eventController.deleteEvent)
 router.patch('/:id', JWTMiddleWare.identification, eventController.modifyEvent);
 
 //Get
-router.get('/pending/', eventController.getAllPending);
+router.get('/pending/', JWTMiddleWare.identification, eventController.getAllPending);
 router.get('/joined/:id', eventController.getAllJoinedEvent);
 router.get('/user/:id', eventController.getAllEventByUser);
-router.get('/:id', eventController.getEvent);
-router.get('/', eventController.getAllEvent);
+router.get('/:id', JWTMiddleWare.identification, eventController.getEvent);
+router.get('/', JWTMiddleWare.identification, eventController.getAllEvent);
 
 
 module.exports = router;

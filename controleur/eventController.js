@@ -71,12 +71,15 @@ module.exports.insertEvent = async (req, res) => {
  *          description: L'évènement a été supprimé
  */
 module.exports.deleteEvent = async (req, res) => {
-    const reqId = req.session.id;
+    const reqId = req.session.userid;
     const eventId = req.params.id;
     const client = await pool.connect();
-    if(isNaN(eventId) || isNaN(eventId)){
+    if(isNaN(reqId) || isNaN(eventId)){
         res.sendStatus(400);
-    } else {
+    } else if (!await EventController.eventExist(client, eventId)){
+        res.sendStatus(404);
+    }
+    else {
         try{
             const ownerId = await EventController.getEventOwner(client, eventId);
             if (reqId === ownerId || req.session.authLevel === 'admin'){ //Vérification si Admin ou Créateur de l'event
@@ -439,21 +442,25 @@ module.exports.modifyEvent = async(req, res) => {
 
         const client = await pool.connect();
         try{
-            const ownerId = await EventController.getEventOwner(client, eventId);
-            if(ownerId === reqId || req.session.authLevel === 'admin') {
-                await client.query(`BEGIN`);
-
-                const {rows: result} = await EventController.getEvent(client, eventId);
-                if(doUpdateEvent)
-                    await EventController.modifyEvent(client, eventId, newData.gameCategoryId, newData.eventDate, newData.eventDescription, newData.nbMaxPlayer);
-                if(doUpdateAddress)
-                    await AddressController.updateAddress(client, result[0].addressid, newData.street, newData.number, newData.city, newData.postCode, newData.country);
-
-                await client.query(`COMMIT`);
-
-                res.sendStatus(204);
+            if(!await EventController.eventExist(client, eventId)){
+                res.sendStatus(404);
             } else {
-                res.sendStatus(403);
+                const ownerId = await EventController.getEventOwner(client, eventId);
+                if(ownerId === reqId || req.session.authLevel === 'admin') {
+                    await client.query(`BEGIN`);
+
+                    const {rows: result} = await EventController.getEvent(client, eventId);
+                    if(doUpdateEvent)
+                        await EventController.modifyEvent(client, eventId, newData.gameCategoryId, newData.eventDate, newData.eventDescription, newData.nbMaxPlayer);
+                    if(doUpdateAddress)
+                        await AddressController.updateAddress(client, result[0].addressid, newData.street, newData.number, newData.city, newData.postCode, newData.country);
+
+                    await client.query(`COMMIT`);
+
+                    res.sendStatus(204);
+                } else {
+                    res.sendStatus(403);
+                }
             }
         } catch (e){
             console.error(e);

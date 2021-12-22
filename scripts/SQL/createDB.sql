@@ -106,6 +106,8 @@ INSERT INTO inscription (eventId, userId) values (1, 1);
 INSERT INTO inscription (eventId, userId) values (2, 1);
 INSERT INTO inscription (eventId, userId) values (3, 2);
 INSERT INTO inscription (eventId, userId) values (4, 3);
+INSERT INTO inscription (eventId, userId) values (5, 4);
+INSERT INTO inscription (eventId, userId) Values (6, 5);
 --Ajout des personnes supplémentaires
 INSERT INTO inscription(eventId, userId) values (2, 4);
 INSERT INTO inscription(eventId, userId) values (3, 3);

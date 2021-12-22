@@ -10,13 +10,13 @@ router.post('/login', userController.login);
 router.post('/', userController.addUser);
 
 //Delete
-router.delete('/:id',  userController.deleteUser);
+router.delete('/:id', JWTMiddleWare.identification, AuthoMiddleware.mustBeAdmin, userController.deleteUser);
 
 //Update
 router.patch('/:id',JWTMiddleWare.identification, userController.modifyUser);
 
 //Get
-router.get('/', userController.getAllUsers);
-router.get('/:id', userController.getUser);
+router.get('/', JWTMiddleWare.identification, userController.getAllUsers);
+router.get('/:id', JWTMiddleWare.identification, userController.getUser);
 
 module.exports = router;

@@ -139,6 +139,7 @@ module.exports.addUser = async (req, res) => {
  *      UserDeleted:
  *          description: L'utilisateur a été supprimé
  */
+//todo : Voir si l'utilisateur existe et envoyer 404 sinon
 module.exports.deleteUser = async(req, res) => {
     const id = req.params.id;
     if(isNaN(id)){
@@ -154,7 +155,7 @@ module.exports.deleteUser = async(req, res) => {
         } catch (e){
             await client.query("ROLLBACK");
             console.error(e);
-            res.sendStatus(404);
+            res.sendStatus(500);
         } finally {
             client.release();
         }
@@ -186,13 +187,12 @@ module.exports.deleteUser = async(req, res) => {
  *                           photopath:
  *                               type: string
  */
+//todo Add 404
 module.exports.modifyUser = async(req, res) => {
     let doUpdate = false;
     let toUpdate = req.body;
     const idToUpdate = req.params.id;
     const newData = {};
-
-    console.log(req.session);
 
     if(idToUpdate === req.session.userid || req.session.authLevel === "admin"){
         if (toUpdate.firstname !== undefined || toUpdate.lastname !== undefined ||

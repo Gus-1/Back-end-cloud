@@ -23,6 +23,7 @@ const InscriptionController = require('../modele/inscriptionDB');
  *                              - userId
  *                              - eventId
  */
+//todo : 404
 module.exports.linkUserEvent = async (req, res) => {
     const eventId = req.body.eventId;
     let userId = req.body.userid
@@ -37,7 +38,7 @@ module.exports.linkUserEvent = async (req, res) => {
             const isNotFull = await InscriptionController.isNotFull(client, eventId);
             const inscriptionExist = await InscriptionController.inscriptionExist(client, userId, eventId);
             if (!isNotFull)
-                res.sendStatus(418).json({error: "Le nombre de participants à atteint sa limite"});
+                res.sendStatus(418).json({error: "Le nombre de participants a atteint sa limite"});
             else if (inscriptionExist)
                 res.sendStatus(409).json({error: "L'inscription existe déjà"});
             else {
@@ -96,6 +97,7 @@ module.exports.unlinkUser = async (req, res) => {
  */
 //todo : Nous pouvons avoir une error plus précise en indiquant que l'inscription d'existe pas
 // todo : Replaced by UnlinkUser
+//todo : 404 et 400
 module.exports.deleteUserFromEvent = async(req, res) => {
     const inscriptionId = req.params.id;
     const client = await pool.connect();
@@ -145,6 +147,7 @@ module.exports.getAllInscription = async (req, res) => {
     }
 }
 
+//todo : 404
 module.exports.updateEventInscription = async(req, res) => {
     const inscriptionId = req.params.id;
     let toUpdate = req.body;

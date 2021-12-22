@@ -72,6 +72,7 @@ module.exports.insertCategory = async (req, res) => {
  */
 // La suppression d'une catégorie supprime aussi les évènements lié.
 // Justification : Si une catégorie pose problème, nous supprimons donc tous les évènements qui y sont liés
+//todo : 404
 module.exports.deleteCategory = async (req, res) => {
     const gameCategoryId = req.params.id;
     if(isNaN(gameCategoryId)){
@@ -119,6 +120,7 @@ module.exports.getAllCategory = async(req, res) => {
     }
 }
 
+//todo : ajouter une 404
 module.exports.getCategoryById = async (req, res) => {
     const client = await pool.connect();
     const id = req.params.id;
@@ -156,6 +158,7 @@ module.exports.getCategoryById = async (req, res) => {
  *                          description:
  *                              type: string
  */
+//todo : 404
 module.exports.updateCategory = async (req, res) => {
     let doUpdate = false;
     let toUpdate = req.body;

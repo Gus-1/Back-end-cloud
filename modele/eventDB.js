@@ -119,8 +119,14 @@ module.exports.modifyEvent = async (client, eventId, gameCategoryId, eventDate, 
 
     return await client.query(query, params);
 }
+
 module.exports.verifyEvent = async(client, eventId, isVerify = true, adminMessage = null) => {
     return await client.query(`
         UPDATE event SET isVerify = $1, adminMessage = $2
         WHERE eventId = $3`, [isVerify, adminMessage, eventId]);
+}
+
+module.exports.eventExist = async(client, idEvent) => {
+    const {rows} = await client.query(`SELECT count(eventId) AS nbr FROM event WHERE eventId = $1`, [idEvent]);
+    return rows[0].nbr >0;
 }
