@@ -61,6 +61,8 @@ INSERT INTO address (street, number, city, postalCode, country) values ('Rue Sai
 INSERT INTO address (street, number, city, postalCode, country) values ('Rue Joseph Calozet', 19, 'Namur', 5000, 'Belgium');
 INSERT INTO address (street, number, city, postalCode, country) values ('Rue du grand babin', 5, 'Malonne', 5010, 'Belgium'); -- Vérifier ces informations
 INSERT INTO address (street, number, city, postalCode, country) values ('Rue de Bruxelles', 10, 'Namur', 5000, 'Belgium');
+INSERT INTO address (street, number, city, postalCode, country) values ('Rue des croisiers', 12, 'Namur', 5000, 'Belgium');
+INSERT INTO address (street, number, city, postalCode, country) values ('Rue Godefroid', 7, 'Namur', 5000, 'Belgium');
 
 
 INSERT INTO gameCategory (label, description) values ('RPG', 'ROLE PLAY GAMES');
@@ -94,7 +96,10 @@ INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, ev
     values (2, 6, NOW(), NOW() + interval '8 day' ,3, 'Principalement Risk', 'false', 12);
 INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
     values (3, 1, NOW(), NOW() + interval '10 hour' ,4, 'Principalement Munchkin', 'true', 6);
-
+INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
+    values (4, 2, NOW(), NOW() + interval '30 hour' ,5, 'On fait des trucs', 'false', 15);
+INSERT INTO event (creatorId, gameCategoryId, creationDate, eventDate, place, eventDescription, isVerified, nbMaxPlayer)
+    values (5, 2, NOW(), NOW() + interval '40 hour' ,6, 'On fait plus de trucs', 'true', 8);
 
 --Ajout des personnes ayant créé l'évènement
 INSERT INTO inscription (eventId, userId) values (1, 1);

@@ -8,7 +8,7 @@ module.exports.getAllEvent = async(client) => {
                                                 join users u on e.creatorid = u.userid
                                                 join gamecategory g on e.gamecategoryid = g.gamecategoryid
                                                 join address a on e.place = a.addressid `);
-    return result.rows;
+    return result;
 }
 
 module.exports.getEvent = async(client, eventId) => {
@@ -22,7 +22,7 @@ module.exports.getEvent = async(client, eventId) => {
                                                 join address a on e.place = a.addressid
                                        WHERE eventid = $1
     `, [eventId]);
-    return result.rows;
+    return result;
 }
 module.exports.getCreator = async(client, eventId) => {
     const result = await client.query(`SELECT event.creatorId, event.eventId, user.userId FROM event JOIN user ON creatorId = userId 
@@ -43,19 +43,20 @@ module.exports.getAllEventByUser = async(client, userId) => {
                                                 join gamecategory g on e.gamecategoryid = g.gamecategoryid
                                                 join address a on e.place = a.addressid
                                        WHERE u.userId = $1`, [userId]);
-    return result.rows;
+    return result;
 }
 module.exports.getAllJoinedEvent = async(client, userId) =>{
     const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
                                               u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
                                               g.gamecategoryid, g.label, g.description,
                                               a.addressid, a.street, a.number, a.city, a.postalcode, a.country
-                                       FROM event e
+                                        FROM event e
+                                                join inscription i on e.eventid = i.eventid
+                                                join address a on e.place = a.addressid
                                                 join users u on e.creatorid = u.userid
                                                 join gamecategory g on e.gamecategoryid = g.gamecategoryid
-                                                join address a on e.place = a.addressid 
-                                       WHERE u.userid = $1`, [userId]);
-    return result.rows;
+                                        WHERE i.userid = $1`, [userId]);
+    return result;
 }
 
 module.exports.getAllPending = async(client) => {
@@ -68,7 +69,7 @@ module.exports.getAllPending = async(client) => {
                                                 join gamecategory g on e.gamecategoryid = g.gamecategoryid
                                                 join address a on e.place = a.addressid
                                        WHERE isverified = false`);
-    return result.rows;
+    return result;
 }
 
 

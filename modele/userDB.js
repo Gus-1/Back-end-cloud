@@ -57,7 +57,7 @@ module.exports.deleteUser = async(client, userId) => {
 // GET METHODS
 module.exports.getAllUsers = async(client) => {
     const result = await client.query(`SELECT * FROM users`);
-    return result.rows;
+    return result;
 }
 module.exports.getUserById = async(client, userId) => {
     const result = await client.query(`SELECT * FROM users WHERE userId = $1`, [userId]);
@@ -71,11 +71,9 @@ module.exports.getUserByEmail = getUsersByEmail;
 
 module.exports.getUser = async(client, email, password) => {
     const user = await getUsersByEmail(client, email);
-    console.log(user);
     if (! await compareHash(password, user.password))
         throw new Error("Not connected");
     return {
-
         userType: user.isadmin ? "admin" : "user",
         value: user
     }

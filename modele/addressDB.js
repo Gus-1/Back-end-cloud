@@ -3,12 +3,12 @@ const {rows} = require("pg/lib/defaults");
 
 module.exports.getAddress = async(client, addressId) => {
     const result = await client.query(`SELECT * FROM address WHERE addressId = $1`, [addressId]);
-    return result.rows;
+    return result;
 }
 
 module.exports.getAllAddress = async(client) =>{
     const result = await client.query(`SELECT * FROM address`);
-    return result.rows;
+    return result;
 }
 
 //POST FUNCTION

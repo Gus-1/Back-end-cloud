@@ -112,19 +112,23 @@ module.exports.login = async (req, res) => {
  */
 module.exports.addUser = async (req, res) => {
     const {firstname, lastname, birthdate, email, password, photopath} = req.body;
-    const client = await pool.connect();
-    try{
-        //Eviter le saut d'id grace à la transaction (cas ou email deja utilisée par exemple)
-        await client.query("BEGIN");
-        await UserController.addUser(client, firstname, lastname, birthdate, email, password, photopath);
-        await client.query("COMMIT");
-        res.sendStatus(201);
-    } catch (e){
-        await client.query("ROLLBACK");
-        console.error(e);
-        res.sendStatus(500);
-    } finally {
-        client.release();
+    if(firstname === undefined || lastname === undefined || birthdate === undefined || email === undefined || password === undefined
+    || photopath === undefined){
+        res.sendStatus(400);
+    } else {
+        const client = await pool.connect();
+        try{
+            await client.query("BEGIN");
+            await UserController.addUser(client, firstname, lastname, birthdate, email, password, photopath);
+            await client.query("COMMIT");
+            res.sendStatus(201);
+        } catch (e){
+            await client.query("ROLLBACK");
+            console.error(e);
+            res.sendStatus(500);
+        } finally {
+            client.release();
+        }
     }
 }
 
@@ -137,19 +141,23 @@ module.exports.addUser = async (req, res) => {
  */
 module.exports.deleteUser = async(req, res) => {
     const id = req.params.id;
-    const client = await pool.connect();
-    try{
-        await client.query("BEGIN");
-        await EventController.deleteUsersEvent(client, id);
-        await UserController.deleteUser(client, id);
-        await client.query("COMMIT");
-        res.sendStatus(204);
-    } catch (e){
-        await client.query("ROLLBACK");
-        console.error(e);
-        res.sendStatus(404);
-    } finally {
-        client.release();
+    if(isNaN(id)){
+        res.sendStatus(400);
+    } else {
+        const client = await pool.connect();
+        try{
+            await client.query("BEGIN");
+            await EventController.deleteUsersEvent(client, id);
+            await UserController.deleteUser(client, id);
+            await client.query("COMMIT");
+            res.sendStatus(204);
+        } catch (e){
+            await client.query("ROLLBACK");
+            console.error(e);
+            res.sendStatus(404);
+        } finally {
+            client.release();
+        }
     }
 }
 
@@ -231,11 +239,14 @@ module.exports.modifyUser = async(req, res) => {
 module.exports.getAllUsers = async(req, res) => {
     const client = await pool.connect();
     try{
-        const result = await UserController.getAllUsers(client);
-        res.json(result);
+        const {rows: result} = await UserController.getAllUsers(client);
+        if (result !== undefined)
+            res.json(result);
+        else
+            res.sendStatus(404);
     } catch (e){
         console.error(e);
-        res.sendStatus(404);
+        res.sendStatus(500);
     } finally {
         client.release();
     }
@@ -254,14 +265,21 @@ module.exports.getAllUsers = async(req, res) => {
  */
 module.exports.getUser = async(req, res) => {
     const userId = req.params.id;
-    const client = await pool.connect();
-    try{
-        const result = await UserController.getUserById(client, userId);
-        res.json(result);
-    } catch (e){
-        console.error(e);
-        res.sendStatus(404);
-    } finally {
-        client.release();
+    if(isNaN(userId)){
+        res.sendStatus(400);
+    } else {
+        const client = await pool.connect();
+        try{
+            const result = await UserController.getUserById(client, userId);
+            if (result !== undefined)
+                res.json(result);
+            else
+                res.sendStatus(404);
+        } catch (e){
+            console.error(e);
+            res.sendStatus(500);
+        } finally {
+            client.release();
+        }
     }
 }

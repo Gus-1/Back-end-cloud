@@ -14,13 +14,13 @@ module.exports.deleteInscription = async (client, inscriptionId) => {
 
 module.exports.getEventFromUser = async(client, userId) => {
     const result = await client.query(`SELECT eventId FROM inscription WHERE userId = $1`, [userId]);
-    return result.rows;
+    return result;
 }
 
 module.exports.getAllInscription = async(client) => {
     const result = await client.query(`select i.*, u.firstName, u.name, e.eventDescription
         from inscription i join users u on i.userid = u.userid join event e on i.eventId = e.eventId`);
-    return result.rows;
+    return result;
 }
 
 module.exports.updateEventInscription = async(client, inscriptionId, eventId, userId) => {
@@ -56,5 +56,9 @@ module.exports.inscriptionExist = async(client, userId, eventId) => {
 
 module.exports.getInscription = async (client, inscriptionId) => {
     const result = await client.query(`SELECT * from inscription where (inscriptionid = $1)`, [inscriptionId]);
-    return result.rows;
+    return result;
+}
+
+module.exports.unlinkUser = async(client, userId, eventId) => {
+    return await client.query(`DELETE FROM inscription WHERE userId = $1 and eventId = $2`, [userId, eventId]);
 }

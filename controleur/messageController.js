@@ -1,6 +1,7 @@
 const pool = require('../modele/database');
 const MessageController = require('../modele/messageDB');
 
+//todo : Nous ne sommes pas encore repassé sur cette catégorie. Nous ne l'utilisons pas pour le React et Android.
 
 module.exports.sendMessage = async (req, res) => {
     const {sender, receiver, content} = req.body;

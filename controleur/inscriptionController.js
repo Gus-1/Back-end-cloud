@@ -28,47 +28,64 @@ module.exports.linkUserEvent = async (req, res) => {
     let userId = req.body.userid
     if (userId === undefined)
         userId = req.session.userid;
-    const client = await pool.connect();
-    /*try{
-        await client.query("BEGIN;");
-        const isNotFull = await InscriptionController.isNotFull(client, eventId);
-        const inscriptionExist = await InscriptionController.inscriptionExist(client, userId, eventId);
-        if (!isNotFull)
-            res.sendStatus(418).json({error: "Le nombre de participants à atteint sa limite"});
-        else if (inscriptionExist)
-            res.sendStatus(418).json({error: "L'inscription existe déjà"});
-        else {
-            await InscriptionController.linkUserEvent(client, userId, eventId);
-            await client.query("COMMIT;");
-            res.sendStatus(201);
+    if(isNaN(eventId)){
+        res.sendStatus(400);
+    } else {
+        const client = await pool.connect();
+        try{
+            await client.query("BEGIN;");
+            const isNotFull = await InscriptionController.isNotFull(client, eventId);
+            const inscriptionExist = await InscriptionController.inscriptionExist(client, userId, eventId);
+            if (!isNotFull)
+                res.sendStatus(418).json({error: "Le nombre de participants à atteint sa limite"});
+            else if (inscriptionExist)
+                res.sendStatus(409).json({error: "L'inscription existe déjà"});
+            else {
+                await InscriptionController.linkUserEvent(client, userId, eventId);
+                await client.query("COMMIT;");
+                res.sendStatus(201);
+            }
+        } catch (e){
+            await client.query("ROLLBACK;");
+            console.error(e);
+            res.sendStatus(500);
+        } finally {
+            client.release();
         }
-    } catch (e){
-        await client.query("ROLLBACK;");
-        console.error(e);
-        res.sendStatus(404);
-    } finally {
-        client.release();
-    }*/
-    try{
-        await client.query("BEGIN;");
-        const isNotFull = await InscriptionController.isNotFull(client, eventId);
-        const inscriptionExist = await InscriptionController.inscriptionExist(client, userId, eventId);
-        if(isNotFull && !inscriptionExist){
-            await InscriptionController.linkUserEvent(client, userId, eventId);
-            await client.query("COMMIT;");
-            res.sendStatus(201);
-        } else {
-          await client.query("ROLLBACK;");
-          res.status(404).json({error: "Le nombre de participant a atteint le maximum"})
+    }
+
+}
+
+
+module.exports.unlinkUser = async (req, res) => {
+    const eventId = req.body.eventId;
+    let userId = req.body.userid
+    if (userId === undefined)
+        userId = req.session.userid;
+    if(isNaN(eventId)){
+        res.sendStatus(400);
+    } else {
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN;");
+            const inscriptionExist = await InscriptionController.inscriptionExist(client, userId, eventId);
+            if (!inscriptionExist)
+                res.sendStatus(404).json({error: "L'inscription n'existe pas"});
+            else {
+                await InscriptionController.unlinkUser(client, userId, eventId);
+                await client.query("COMMIT;");
+                res.sendStatus(201);
+            }
+        } catch (e) {
+            await client.query("ROLLBACK;");
+            console.error(e);
+            res.sendStatus(500);
+        } finally {
+            client.release();
         }
-    } catch (e){
-        await client.query("ROLLBACK;");
-        console.error(e);
-        res.sendStatus(500);
-    } finally {
-        client.release();
     }
 }
+
 
 /**
  *@swagger
@@ -78,6 +95,7 @@ module.exports.linkUserEvent = async (req, res) => {
  *          description: L'utilisateur a été supprimé de l'évenement
  */
 //todo : Nous pouvons avoir une error plus précise en indiquant que l'inscription d'existe pas
+// todo : Replaced by UnlinkUser
 module.exports.deleteUserFromEvent = async(req, res) => {
     const inscriptionId = req.params.id;
     const client = await pool.connect();
@@ -96,11 +114,15 @@ module.exports.getEventFromUser = async (req, res) => {
     const {userId} = req.body;
     const client = await pool.connect();
     try {
-        const result = await InscriptionController.getEventFromUser(client, userId);
-        res.json(result);
+        const {rows: result} = await InscriptionController.getEventFromUser(client, userId);
+        if (result !== undefined){
+            res.json(result);
+        } else {
+            res.sendStatus(404);
+        }
     } catch (e) {
         console.error(e);
-        res.sendStatus(404);
+        res.sendStatus(500);
     } finally {
         client.release();
     }
@@ -109,8 +131,12 @@ module.exports.getEventFromUser = async (req, res) => {
 module.exports.getAllInscription = async (req, res) => {
     const client = await pool.connect();
     try{
-        const result = await InscriptionController.getAllInscription(client);
-        res.json(result);
+        const {rows: result} = await InscriptionController.getAllInscription(client);
+        if (result !== undefined){
+            res.json(result);
+        } else {
+            res.sendStatus(404);
+        }
     } catch(e) {
         console.error(e);
         res.sendStatus(500);
@@ -149,10 +175,13 @@ module.exports.inscriptionExist = async(req, res) => {
     const client = await pool.connect();
     try {
         const result = await InscriptionController.inscriptionExist(client, userId, eventId);
-        res.json(result);
+        if(result !== undefined)
+            res.json(result);
+        else
+            res.sendStatus(404)
     } catch(e){
         console.error(e);
-        res.sendStatus(404);
+        res.sendStatus(500);
     } finally {
         client.release();
     }
@@ -160,14 +189,21 @@ module.exports.inscriptionExist = async(req, res) => {
 
 module.exports.getInscription = async (req, res) => {
     const inscriptionId = req.params.id;
-    const client = await pool.connect();
-    try {
-        const result = await InscriptionController.getInscription(client, inscriptionId);
-        res.json(result);
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(404);
-    } finally {
-        client.release();
+    if(isNaN(inscriptionId)){
+        res.sendStatus(400);
+    } else {
+        const client = await pool.connect();
+        try {
+            const {rows: result} = await InscriptionController.getInscription(client, inscriptionId);
+            if(result !== undefined)
+                res.json(result);
+            else
+                res.sendStatus(404);
+        } catch (e) {
+            console.error(e);
+            res.sendStatus(500);
+        } finally {
+            client.release();
+        }
     }
 }

@@ -4,6 +4,7 @@ const InscriptionController = require('../controleur/inscriptionController');
 const JWTMiddleWare = require("../middleware/IdentificationJWT");
 
 //Post
+router.post('/unlink/', JWTMiddleWare.identification,InscriptionController.unlinkUser);
 router.post('/', JWTMiddleWare.identification,InscriptionController.linkUserEvent);
 
 //Delete

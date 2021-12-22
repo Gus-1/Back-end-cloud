@@ -43,18 +43,22 @@ const pool = require('../modele/database');
  */
 module.exports.insertCategory = async (req, res) => {
     const {label, description} = req.body;
-    const client = await pool.connect();
-    try{
-        await client.query(`BEGIN`);
-        await GameCategoryDB.insertCategory(client, label, description);
-        await client.query(`COMMIT`);
-        res.sendStatus(201);
-    } catch (e){
-        console.error(e);
-        await client.query(`ROLLBACK`);
-        res.sendStatus(500);
-    } finally {
-        client.release();
+    if(label === undefined || description === undefined){
+        res.sendStatus(400);
+    } else {
+        const client = await pool.connect();
+        try{
+            await client.query(`BEGIN`);
+            await GameCategoryDB.insertCategory(client, label, description);
+            await client.query(`COMMIT`);
+            res.sendStatus(201);
+        } catch (e){
+            console.error(e);
+            await client.query(`ROLLBACK`);
+            res.sendStatus(500);
+        } finally {
+            client.release();
+        }
     }
 }
 
@@ -70,15 +74,19 @@ module.exports.insertCategory = async (req, res) => {
 // Justification : Si une catégorie pose problème, nous supprimons donc tous les évènements qui y sont liés
 module.exports.deleteCategory = async (req, res) => {
     const gameCategoryId = req.params.id;
-    const client = await pool.connect();
-    try{
-        await GameCategoryDB.deleteCategory(client, gameCategoryId);
-        res.sendStatus(204);
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(500);
-    } finally {
-        client.release();
+    if(isNaN(gameCategoryId)){
+        res.sendStatus(400);
+    } else {
+        const client = await pool.connect();
+        try{
+            await GameCategoryDB.deleteCategory(client, gameCategoryId);
+            res.sendStatus(204);
+        } catch (e) {
+            console.error(e);
+            res.sendStatus(500);
+        } finally {
+            client.release();
+        }
     }
 }
 
@@ -97,11 +105,15 @@ module.exports.deleteCategory = async (req, res) => {
 module.exports.getAllCategory = async(req, res) => {
     const client = await pool.connect();
     try{
-        const result = await GameCategoryDB.getAllCategory(client);
-        res.json(result);
+        const {rows: result} = await GameCategoryDB.getAllCategory(client);
+        if(result !== undefined) {
+            res.json(result);
+        } else {
+            res.sendStatus(404);
+        }
     } catch (e) {
         console.error(e);
-        res.sendStatus(404);
+        res.sendStatus(500);
     } finally {
         client.release();
     }
@@ -110,14 +122,18 @@ module.exports.getAllCategory = async(req, res) => {
 module.exports.getCategoryById = async (req, res) => {
     const client = await pool.connect();
     const id = req.params.id;
-    try {
-        const result = await GameCategoryDB.getCategoryById(client, id);
-        res.json(result);
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(404);
-    } finally {
-        client.release();
+    if(isNaN(id)){
+        res.sendStatus(400);
+    } else {
+        try {
+            const {rows: result} = await GameCategoryDB.getCategoryById(client, id);
+            res.json(result);
+        } catch (e) {
+            console.error(e);
+            res.sendStatus(500);
+        } finally {
+            client.release();
+        }
     }
 }
 

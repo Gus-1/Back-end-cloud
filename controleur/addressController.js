@@ -60,21 +60,24 @@ const pool = require('../modele/database');
  *                          - country
  */
 
-//todo : Pour des raisons inexplicables, le saut d'id se fait toujours
 module.exports.insertAddress = async(req, res) => {
     const {street, number, city, postCode, country} = req.body;
-    const client = await pool.connect();
-    await client.query(`BEGIN;`);
-    try{
-        await AddressController.insertAddress(client, street, number, city, postCode, country);
-        await client.query(`COMMIT;`);
-        res.sendStatus(201);
-    } catch (e){
-        console.error(e);
-        await client.query(`ROLLBACK;`);
-        res.sendStatus(500);
-    } finally {
-        client.release();
+    if(street === undefined || number === undefined || city === undefined || postCode === undefined || country === undefined){
+        res.sendStatus(400);
+    } else {
+        const client = await pool.connect();
+        await client.query(`BEGIN;`);
+        try{
+            await AddressController.insertAddress(client, street, number, city, postCode, country);
+            await client.query(`COMMIT;`);
+            res.sendStatus(201);
+        } catch (e){
+            console.error(e);
+            await client.query(`ROLLBACK;`);
+            res.sendStatus(500);
+        } finally {
+            client.release();
+        }
     }
 }
 
@@ -94,11 +97,14 @@ module.exports.insertAddress = async(req, res) => {
 module.exports.getAllAddress = async(req, res) => {
     const client = await pool.connect();
     try{
-        const result = await AddressController.getAllAddress(client);
-        res.json(result);
+        const {rows: result} = await AddressController.getAllAddress(client);
+        if(result !== undefined)
+            res.json(result);
+        else
+            res.sendStatus(404);
     } catch (e) {
         console.error(e);
-        res.sendStatus(404);
+        res.sendStatus(500);
     } finally {
         client.release();
     }
@@ -119,14 +125,21 @@ module.exports.getAllAddress = async(req, res) => {
 module.exports.getAddress = async(req, res) => {
     const addressId = req.params.id;
     const client = await pool.connect();
-    try{
-        const result = await AddressController.getAddress(client, addressId);
-        res.json(result);
-    } catch (e){
-        console.error(e);
-        res.sendStatus(404);
-    } finally {
-        client.release();
+    if(isNaN(addressId)){
+        res.sendStatus(400);
+    } else {
+        try{
+            const {rows: result} = await AddressController.getAddress(client, addressId);
+            if(result !== undefined)
+                res.json(result);
+            else
+                res.sendStatus(404);
+        } catch (e){
+            console.error(e);
+            res.sendStatus(500);
+        } finally {
+            client.release();
+        }
     }
 }
 
