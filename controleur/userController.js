@@ -8,48 +8,16 @@ require("dotenv").config();
  * @swagger
  * components:
  *  schemas:
- *      User:
- *          type: object
- *          properties:
- *              userid:
- *                  type: integer
- *              firstname:
- *                  type: string
- *                  description: prenom de l'utilisateur
- *              name:
- *                  type: string
- *                  description: nom de l'utilisateur
- *              birthdate:
- *                  type: date
- *                  description: date de naissance de l'utilisateur (YYYY-MM-DD)
- *              isadmin:
- *                  type: string
- *                  description: est à 1 si l'utilisateur est un admin
- *              email:
- *                  type: string
- *                  description: adresse email de l'utilisateur
- *              password:
- *                  type: string
- *                  format: password
- *              photopath:
- *                  type: string
- *                  description: chemin d'accès à sa photo
- */
-
-/**
- * @swagger
- * components:
- *  schemas:
  *      Login:
  *          type: object
  *          properties:
- *              email:
+ *              username:
  *                  type: string
  *              password:
  *                  type: string
  *                  format: password
  *          required:
- *              - email
+ *              - username
  *              - password
  */
 module.exports.login = async (req, res) => {
@@ -78,38 +46,6 @@ module.exports.login = async (req, res) => {
     }
 }
 
-/**
- *@swagger
- *components:
- *  responses:
- *      UtilisateurAjoute:
- *          description: l'utilisateur a été ajouté
- *  requestBodies:
- *      UtilisateurAAjoute:
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          firstname:
- *                              type: string
- *                              description: prenom de l'utilisateur
- *                          lastname:
- *                              type: string
- *                              description: nom de l'utilisateur
- *                          birthdate:
- *                              type: date
- *                              description: date de naissance de l'utilisateur (YYYY-MM-DD)
- *                          email:
- *                              type: string
- *                              description: adresse email de l'utilisateur
- *                          password:
- *                              type: string
- *                              format: password
- *                          photopath:
- *                              type: string
- *                              description: chemin d'accès à sa photo
- */
 module.exports.addUser = async (req, res) => {
     const {firstname, lastname, birthdate, email, password, photopath} = req.body;
     if(firstname === undefined || lastname === undefined || birthdate === undefined || email === undefined || password === undefined
@@ -132,13 +68,6 @@ module.exports.addUser = async (req, res) => {
     }
 }
 
-/**
- *@swagger
- *components:
- *  responses:
- *      UserDeleted:
- *          description: L'utilisateur a été supprimé
- */
 module.exports.deleteUser = async(req, res) => {
     const id = req.params.id;
     if(isNaN(id)){
@@ -166,31 +95,6 @@ module.exports.deleteUser = async(req, res) => {
     }
 }
 
-/**
- *@swagger
- *components:
- *  responses:
- *      UtilisateurUpdated:
- *          description: l'utilisateur a été mis à jour
- *  requestBodies:
- *      UtilisateurAUpdate:
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                           firstname:
- *                               type: string
- *                           name:
- *                               type: string
- *                           birthdate:
- *                               type: date
- *                           password:
- *                               type: string
- *                               format: password
- *                           photopath:
- *                               type: string
- */
 module.exports.modifyUser = async(req, res) => {
     let doUpdate = false;
     let toUpdate = req.body;
@@ -232,17 +136,6 @@ module.exports.modifyUser = async(req, res) => {
 }
 
 
-/**
- * @swagger
- * components:
- *  responses:
- *      UtilisateursFound:
- *           description: renvoie tous les users dans un tableau
- *           content:
- *               application/json:
- *                   schema:
- *                       $ref: '#/components/schemas/User'
- */
 module.exports.getAllUsers = async(req, res) => {
     const client = await pool.connect();
     try{
@@ -259,17 +152,6 @@ module.exports.getAllUsers = async(req, res) => {
     }
 }
 
-/**
- * @swagger
- * components:
- *  responses:
- *      UtilisateurFound:
- *           description: renvoie un utilisateur en fonction de son identifian
- *           content:
- *               application/json:
- *                   schema:
- *                       $ref: '#/components/schemas/User'
- */
 module.exports.getUser = async(req, res) => {
     const userId = req.params.id;
     if(isNaN(userId)){

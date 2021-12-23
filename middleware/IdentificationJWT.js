@@ -2,6 +2,46 @@ const process = require('process');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
+
+
+/**
+ * @swagger
+ *
+ * components:
+ *   responses:
+ *     UnauthorizedJWT:
+ *       description: JWT manquant ou expiré
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *             $ref: '#/components/schemas/WrongJWT'
+ *
+ *   schemas:
+ *     WrongJWT:
+ *       type: object
+ *       oneOf:
+ *         - $ref: '#/components/responses/MissingJWT'
+ *         - $ref: '#/components/responses/ExpiredJWT'
+ */
+
+/**
+ * @swagger
+ * components:
+ *  securitySchemes:
+ *      bearerAuth:
+ *          type: http
+ *          scheme: bearer
+ *          bearerFormat: JWT
+ *  responses:
+ *      ErrorJWT:
+ *          description: Le JWT n'est pas valide
+ *      MissingJWT:
+ *          description: Le JWT n'est pas présent
+ *      ExpiredJWT:
+ *        description: Le JWT est expiré
+ */
+
 module.exports.identification = async (req, res, next) => {
     const headerAuth = req.get('authorization');
     if (headerAuth !== undefined && headerAuth.includes("Bearer")){

@@ -49,8 +49,13 @@ module.exports.isNotFull = async(client, eventId) => {
     return (resultQuantity.rows[0].count < resultMax.rows[0].nbmaxplayer);
 }
 
-module.exports.inscriptionExist = async(client, userId, eventId) => {
+module.exports.inscriptionExistByEventUser = async(client, userId, eventId) => {
     const {rows} = await client.query(`SELECT count(inscriptionId) AS nbr FROM inscription WHERE userid = $1 and eventid = $2`, [userId, eventId]);
+    return rows[0].nbr > 0;
+}
+
+module.exports.inscriptionExistById = async(client, inscriptionId) => {
+    const {rows} = await client.query(`SELECT count(inscriptionId) AS nbr FROM inscription WHERE inscriptionId = $1`, [inscriptionId]);
     return rows[0].nbr > 0;
 }
 

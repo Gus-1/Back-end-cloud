@@ -3,27 +3,24 @@ const pool = require('../modele/database');
 
 
 /**
- *@swagger
- *components:
- *  schemas:
- *      Address:
- *          type: object
- *          properties:
- *              addressId:
- *                  type: integer
- *              street:
- *                  type: string
- *                  description: nom de la rue
- *              number:
- *                  type: integer
- *              city:
- *                  type: string
- *                  description: nom de la ville
- *              postalcode:
- *                  type: integer
- *              country:
- *                  type: string
- *                  description: nom du pays
+ * @swagger
+ * components:
+ *   schemas:
+ *     Address:
+ *       type: object
+ *       properties:
+ *         addressId:
+ *           type: integer
+ *         street:
+ *           type: string
+ *         number:
+ *           type: string
+ *         country:
+ *           type: string
+ *         city:
+ *           type: string
+ *         postalCode:
+ *           type: string
  */
 
 
@@ -31,33 +28,34 @@ const pool = require('../modele/database');
  *@swagger
  *components:
  *  responses:
- *      AdresseAjoute:
+ *      AddressAdded:
  *          description: L'adresse a été ajoutée
- *
+ *      AddAddressBadRequest:
+ *          description: Tous les champs du corps de la requête doivent être définis
  *  requestBodies:
- *      AdresseAAjoute:
+ *      AddressToAdd:
+ *          description : Adresse a ajouter
  *          content:
  *              application/json:
  *                  schema:
  *                      type: object
  *                      properties:
- *                          street:
- *                              type: string
- *                          number:
- *                              type: integer
- *                          city:
- *                              type: string
- *                          postCode:
- *                              type: integer
- *                          country:
- *                              type: string
- *
+ *                        street:
+ *                          type: string
+ *                        number:
+ *                          type: integer
+ *                        country:
+ *                          type: string
+ *                        city:
+ *                          type: string
+ *                        postalCode:
+ *                          type: integer
  *                      required:
  *                          - street
  *                          - number
- *                          - city
- *                          - postCode
  *                          - country
+ *                          - city
+ *                          - postalCode
  */
 
 module.exports.insertAddress = async(req, res) => {
@@ -84,16 +82,17 @@ module.exports.insertAddress = async(req, res) => {
 
 
 /**
- * @swagger
- * components:
+ *@swagger
+ *components:
  *  responses:
- *      AddressFound:
- *           description: renvoie toutes les addresses dans un tableau
- *           content:
- *               application/json:
- *                   schema:
- *                       $ref: '#/components/schemas/Produit'
+ *      AllAddressFound:
+ *          description: Renvoie un tableau contenant toutes les adresses
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Address'
  */
+//J'ai enlevé la bad request
 module.exports.getAllAddress = async(req, res) => {
     const client = await pool.connect();
     try{
@@ -112,16 +111,19 @@ module.exports.getAllAddress = async(req, res) => {
 
 
 /**
- * @swagger
- * components:
+ *@swagger
+ *components:
  *  responses:
  *      AddressFound:
- *           description: renvoie un produit
- *           content:
- *               application/json:
- *                   schema:
- *                       $ref: '#/components/schemas/Produit'
+ *          description: Renvoie une addresse sur base d'un id fourni
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Address'
+ *      getAddressBadRequest:
+ *          description: L'id fournie doit être définie
  */
+
 module.exports.getAddress = async(req, res) => {
     const addressId = req.params.id;
     const client = await pool.connect();
@@ -149,8 +151,11 @@ module.exports.getAddress = async(req, res) => {
  *components:
  *  responses:
  *      AddressDeleted:
- *          description: l'addresse a été supprimée
+ *          description: L'adresse de l'évènement a été supprimée
+ *      DeleteAddressBadRequest:
+ *          description: l'id de l'adresse doit être fourni
  */
+
 module.exports.deleteAddress = async (req, res) => {
     const addressId = req.params.id;
     const client = await pool.connect();
@@ -171,27 +176,35 @@ module.exports.deleteAddress = async (req, res) => {
  *components:
  *  responses:
  *      AddressUpdated:
- *          description: l'adresse a été mise à jour
+ *          description: L'utilisateur a été modifié
+ *      UpdateAddressBadRequest:
+ *          description: Tous les champs du corps de la requête doivent être définis
  *  requestBodies:
- *      ProduitAUpdate:
+ *      AddressToUpdate:
+ *          description : Utilisateur à mettre à jour
  *          content:
  *              application/json:
  *                  schema:
  *                      type: object
  *                      properties:
- *                          id:
- *                              type: integer
  *                          street:
  *                              type: string
  *                          number:
  *                              type: integer
- *                          city:
- *                              type: string
- *                          postcode:
- *                              type: integer
  *                          country:
  *                              type: string
+ *                          city:
+ *                              type: string
+ *                          postalCode:
+ *                              type: integer
+ *                      required:
+ *                          - street
+ *                          - number
+ *                          - country
+ *                          - city
+ *                          - postalCode
  */
+
 module.exports.updateAddress = async(req, res) => {
     let doUpdate = false;
     let toUpdate = req.body;

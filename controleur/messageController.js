@@ -20,13 +20,7 @@ module.exports.sendMessage = async (req, res) => {
     }
 }
 
-/**
- *@swagger
- *components:
- *  responses:
- *      MessageDeleted:
- *          description: Le message a été supprimé
- */
+
 module.exports.deleteMessage = async (req, res) => {
     const messageId = req.params.id;
     const client = await pool.connect();

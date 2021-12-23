@@ -5,39 +5,82 @@ const InscriptionController = require('../modele/inscriptionDB');
 const pool = require('../modele/database');
 const {add} = require("nodemon/lib/rules");
 
+
 /**
  * @swagger
- *  components:
- *      responses:
- *          EvenementInseré:
- *              description: L'évenement a été ajouté à la base de donnée
- *      requestBodies:
- *          EvenementInseré:
- *              content:
- *                  application/json:
- *                      schema:
- *                          properties:
- *                              creatorId:
- *                                  type: integer
- *                              gameCategoryId:
- *                                  type: integer
- *                              eventDate:
- *                                  type: string (MM-DD-YYYY)
- *                              place:
- *                                  type: string
- *                              eventDescription:
- *                                  type: string
- *                              nbMaxPlayer:
- *                                  type: integer
- *
- *                          required:
- *                              - creatorId
- *                              - gameCategoryId
- *                              - eventDate
- *                              - place
- *                              - eventDescription
- *                              - nbMaxPlayer
+ * components:
+ *   schemas:
+ *     Event:
+ *       type: object
+ *       properties:
+ *         eventId:
+ *           type: integer
+ *         creatorId:
+ *           type: integer
+ *         gameCategoryId:
+ *           type: integer
+ *         creationDate:
+ *           type: string
+ *           format: date
+ *         eventDate:
+ *           type: string
+ *           format: date
+ *         place:
+ *           type: integer
+ *         eventDescription:
+ *           type: string
+ *         isVerified:
+ *           type: boolean
+ *         nbMaxPlayer:
+ *           type: integer
+ *         adminMessage:
+ *           type: string
  */
+
+
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      EventAdded:
+ *          description: L'évènement a été ajouté
+ *      AddEventBadRequest:
+ *          description: Tous les champs du corps de la requête doivent être définis
+ *  requestBodies:
+ *      EventToAdd:
+ *          description : Evenement a ajouter
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          creatorId:
+ *                              type: integer
+ *                          gameCategoryId:
+ *                              type: integer
+ *                          creationDate:
+ *                              type: string
+ *                              format: date
+ *                          eventDate:
+ *                              type: string
+ *                              format: date
+ *                          place:
+ *                              type: integer
+ *                          eventDescription:
+ *                             type: string
+ *                          nbMaxPlayer:
+ *                              type: integer
+ *                      required:
+ *                          - creatorId
+ *                          - gameCategoryId
+ *                          - creationDate
+ *                          - eventDate
+ *                          - place
+ *                          - eventDescription
+ *                          - nbMaxPlayer
+ */
+
 module.exports.insertEvent = async (req, res) => {
     const {creatorId, gameCategoryId, eventDate, eventDescription, nbMaxPlayer, street, number, city,
         postalCode, country} = req.body;
@@ -67,9 +110,24 @@ module.exports.insertEvent = async (req, res) => {
  *@swagger
  *components:
  *  responses:
- *      EvènementSupprimé:
+ *      EventDeleted:
  *          description: L'évènement a été supprimé
+ *      DeleteEventBadRequest:
+ *          description: L'id de l'évènement doit être fourni
+ *  requestBodies:
+ *      EventToDelete:
+ *          description : Evenement à supprimer
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          eventId:
+ *                              type: integer
+ *                      required:
+ *                          - eventId
  */
+
 module.exports.deleteEvent = async (req, res) => {
     const reqId = req.session.userid;
     const eventId = req.params.id;
@@ -106,6 +164,22 @@ module.exports.deleteEvent = async (req, res) => {
         }
     }
 }
+
+
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      GetEventFound:
+ *          description: Renvoie un évènement sur base d'un identifiant
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Event'
+ *      GetEventBadRequest:
+ *          description: L'id doit être fournie
+ */
 
 module.exports.getEvent = async (req, res) => {
     const eventId = req.params.id;
@@ -160,6 +234,19 @@ module.exports.getEvent = async (req, res) => {
     }
 }
 
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      AllEventFound:
+ *          description: Renvoie un tableau de tous les évènements
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Event'
+ */
+//J'ai supprimé la bad request
 module.exports.getAllEvent = async (req, res) => {
     const client = await pool.connect();
     try{
@@ -211,6 +298,21 @@ module.exports.getAllEvent = async (req, res) => {
         client.release();
     }
 }
+
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      AllEventByUserFound:
+ *          description: Renvoie un tableau de tous les évènements
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Event'
+ *      AllEventByUserBadRequest:
+ *          description: L'id de l'utilisateur doit être définis
+ */
 
 module.exports.getAllEventByUser = async(req, res) => {
     const userId = req.params.id;
@@ -264,6 +366,21 @@ module.exports.getAllEventByUser = async(req, res) => {
     }
 }
 
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      AllJoinedEventFound:
+ *          description: Renvoie un tableau de tous les évènements rejoints
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Event'
+ *      AllJoinedEventBadRequest:
+ *          description: L'id de l'utilisateur doit être fournis
+ */
+
 module.exports.getAllJoinedEvent = async(req, res) => {
     const userId = req.params.id;
     const client = await pool.connect();
@@ -316,6 +433,19 @@ module.exports.getAllJoinedEvent = async(req, res) => {
     }
 }
 
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      AllPendingEventFound:
+ *          description: Renvoie un tableau de tous les évènements en attente de validation
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Event'
+ */
+// J'ai viré le bad request
 module.exports.getAllPending = async(req, res) => {
     const client = await pool.connect();
     try{
@@ -369,7 +499,20 @@ module.exports.getAllPending = async(req, res) => {
 }
 
 
-//todo : Pas nécessaire jusqu'ici. Peut-on la supprimer ? La fonction n'a pas été clean
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      EventOwnerFound:
+ *          description: Renvoie l'id du propriétaire d'un évènement
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Event'
+ *      EventOwnerBadRequest:
+ *          description: L'id de l'évènement doit être fournis
+ */
+
 module.exports.getEventOwner = async (req, res) => {
     const client = await pool.connect();
     const eventId = req.params.id;
@@ -387,29 +530,58 @@ module.exports.getEventOwner = async (req, res) => {
 
 
 /**
- * @swagger
- *  components:
- *      responses:
- *          EventUpdate:
- *              description: L'évènement a été mis à jour
- *      requestBodies:
- *          EventUpdate:
- *              content:
- *                  application/json:
- *                      schema:
- *                          properties:
- *                              eventDate:
- *                                  type: string
- *                              place:
- *                                  type: string
- *                              eventDescription:
- *                                  type: string
- *                              nbMaxPlayer:
- *                                  type: integer
- *                              gameCategoryId:
- *                                  type: integer
+ *@swagger
+ *components:
+ *  responses:
+ *      EventUpdated:
+ *          description: L'évènement a été modifié
+ *      UpdateEventBadRequest:
+ *          description: Tous les champs du corps de la requête doivent être définis
+ *  requestBodies:
+ *      EventToUpdate:
+ *          description : L'évènement à mettre à jour
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          eventDate:
+ *                              type: string
+ *                              format: date
+ *                          place:
+ *                              type: integer
+ *                          eventDescription:
+ *                              type: string
+ *                          nbMaxPlayer:
+ *                              type: integer
+ *                          gameCategoryId:
+ *                              type: integer
+ *                          street:
+ *                              type: string
+ *                          number:
+ *                              type: string
+ *                          country:
+ *                              type: string
+ *                          city:
+ *                              type: string
+ *                          postCode:
+ *                              type: string
+ *                      required:
+ *                          - eventDate
+ *                          - place
+ *                          - eventDescription
+ *                          - nbMaxPlayer
+ *                          - gameCategoryId
+ *                          - street
+ *                          - number
+ *                          - country
+ *                          - city
+ *                          - postCode
  */
+
 module.exports.modifyEvent = async(req, res) => {
+    //todo : Check pourquoi le place se balade seul
+
     const reqId = req.session.id
     let doUpdateEvent = false;
     let doUpdateAddress = false;

@@ -1,46 +1,47 @@
 const GameCategoryDB = require ('../modele/gameCategoryDB');
 const pool = require('../modele/database');
 
+
 /**
  * @swagger
  * components:
- *  schemas:
- *      Produit:
- *          type: object
- *          properties:
- *              gameCategoryId:
- *                  type: integer
- *              label:
- *                  type: string
- *                  description: titre de la catégorie
- *              description:
- *                  type: string
- *                  description: description de la catégorie
- *
+ *   schemas:
+ *     GameCategory:
+ *       type: object
+ *       properties:
+ *         gameCategoryId:
+ *           type: integer
+ *         label:
+ *           type: string
+ *         description:
+ *           type: string
  */
-
 
 /**
- * @swagger
- *  components:
- *      responses:
- *          EvenementInseré:
- *              description: L'évenement a été ajouté à la base de donnée
- *      requestBodies:
- *          EvenementInseré:
- *              content:
- *                  application/json:
- *                      schema:
- *                          properties:
- *                              label:
- *                                  type: string
- *                              description:
- *                                  type: string
- *
- *                          required:
- *                              - label
- *                              - descritpion
+ *@swagger
+ *components:
+ *  responses:
+ *      GameCategoryAdded:
+ *          description: La catégorie a été ajoutée
+ *      AddGameCategoryBadRequest:
+ *          description: Tous les champs du corps de la requête doivent être définis
+ *  requestBodies:
+ *      GameCategoryToAdd:
+ *          description : La catégorie à ajouter
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          label:
+ *                              type: string
+ *                          description:
+ *                              type: string
+ *                      required:
+ *                          - label
+ *                          - description
  */
+
 module.exports.insertCategory = async (req, res) => {
     const {label, description} = req.body;
     if(label === undefined || description === undefined){
@@ -67,9 +68,25 @@ module.exports.insertCategory = async (req, res) => {
  *@swagger
  *components:
  *  responses:
- *      CategoryDeleted:
- *          description: La catégorie a été supprimée
+ *      GameCategoryDeleted:
+ *          description: La catégorie a été supprimée ainsi que tous les évènements liés
+ *      DeleteGameCategoryBadRequest:
+ *          description: L'id de la catégorie doit être définit
+ *  requestBodies:
+ *      GameCategoryToDelete:
+ *          description : Catégorie à supprimer
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          gameCategoryId:
+ *                              type: integer
+ *                      required:
+ *                          - gameCategoryId
  */
+//content deleted
+
 // La suppression d'une catégorie supprime aussi les évènements lié.
 // Justification : Si une catégorie pose problème, nous supprimons donc tous les évènements qui y sont liés
 module.exports.deleteCategory = async (req, res) => {
@@ -79,7 +96,7 @@ module.exports.deleteCategory = async (req, res) => {
     } else {
         const client = await pool.connect();
         try{
-            if(!gameCategoryId.categoryExist (client, gameCategoryId)){
+            if(!await GameCategoryDB.categoryExist(client, gameCategoryId)){
                 res.sendStatus(404);
             } else {
                 await GameCategoryDB.deleteCategory(client, gameCategoryId);
@@ -96,16 +113,17 @@ module.exports.deleteCategory = async (req, res) => {
 
 
 /**
- * @swagger
- * components:
+ *@swagger
+ *components:
  *  responses:
- *      CategoryFound:
- *           description: renvoie un tableau de toutes les catégoies
- *           content:
- *               application/json:
- *                   schema:
- *                       $ref: '#/components/schemas/Produit'
+ *      AllCategoryFound:
+ *          description: Renvoie un tableau contenant toutes les catégories
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/GameCategory'
  */
+//J'ai retiré la bad request
 module.exports.getAllCategory = async(req, res) => {
     const client = await pool.connect();
     try{
@@ -123,9 +141,24 @@ module.exports.getAllCategory = async(req, res) => {
     }
 }
 
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      CategoryByIdFound:
+ *          description: Renvoie une catégorie sur base de l'identifiant
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/GameCategory'
+ *      CategoryByIdBadRequest:
+ *          description: L'identifiant de la catégorie doit être définis
+ */
+
 module.exports.getCategoryById = async (req, res) => {
-    const client = await pool.connect();
     const id = req.params.id;
+    const client = await pool.connect();
     if(isNaN(id)){
         res.sendStatus(400);
     } else {
@@ -150,10 +183,13 @@ module.exports.getCategoryById = async (req, res) => {
  *@swagger
  *components:
  *  responses:
- *      CategoryUpdated:
- *          description: la catégorie a été mise à jour
+ *      GameCategoryUpdated:
+ *          description: La catégorie a été modifiée
+ *      GameCategoryBadRequest:
+ *          description: Tous les champs du corps de la requête doivent être définis
  *  requestBodies:
- *      CategoryUpdate:
+ *      GameCategoryToUpdate:
+ *          description : La catégorie à mettre à jour
  *          content:
  *              application/json:
  *                  schema:
@@ -163,7 +199,11 @@ module.exports.getCategoryById = async (req, res) => {
  *                              type: string
  *                          description:
  *                              type: string
+ *                      required:
+ *                          - label
+ *                          - description
  */
+
 module.exports.updateCategory = async (req, res) => {
     let doUpdate = false;
     let toUpdate = req.body;
