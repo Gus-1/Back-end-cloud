@@ -311,3 +311,27 @@ module.exports.getUser = async(req, res) => {
         }
     }
 }
+
+
+module.exports.grantUser = async(req, res) => {
+    const userId = req.params.id;
+    const {isAdmin} = req.body;
+    if(isNaN(userId)) {
+        res.sendStatus(400);
+    } else {
+        const client = await pool.connect();
+        try{
+            if(UserController.userExist(client, userId)){
+                await UserController.grantUser(client, userId, isAdmin);
+                res.sendStatus(204);
+            } else{
+                res.sendStatus(404);
+            }
+        } catch (e){
+            console.error(e);
+            res.sendStatus(500)
+        } finally {
+            client.release();
+        }
+    }
+}

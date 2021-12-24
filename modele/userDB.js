@@ -30,14 +30,11 @@ module.exports.modifyUser = async (client, userId, firstName, name, birthDate, p
     query += ` WHERE userId = ${userId}`;
     return client.query(query, params);
 }
+module.exports.grantUser = async (client, userId, isAdmin) => {
+    return await client.query(`UPDATE users SET isAdmin = $1 WHERE userId = $2`, [isAdmin, userId]);
+}
 
 //INSERT METHODS
-module.exports.addAdmin = async (client, firstName, lastName, birthDate, email, password, photoPath) => {
-    const date = new Date(birthDate);
-    return await client.query(`
-        INSERT INTO users(firstName, name, birthDate, isAdmin, email, password, photoPath) VALUES
-        ($1, $2, $3, $4, $5, $6, $7)`, [firstName, lastName, date, true, email, await getHash(password), photoPath]);
-}
 module.exports.addUser = async (client, firstName, lastName, birthDate, email, password, photoPath) => {
     const date = new Date(birthDate);
     return await client.query(`

@@ -42,6 +42,7 @@ router.post('/', userController.addUser);
 router.delete('/:id', JWTMiddleWare.identification, AuthoMiddleware.mustBeAdmin, userController.deleteUser);
 
 //Update
+router.patch('/grant/:id', JWTMiddleWare.identification, AuthoMiddleware.mustBeAdmin, userController.grantUser)
 router.patch('/:id',JWTMiddleWare.identification, userController.modifyUser);
 
 //Get

@@ -120,10 +120,22 @@ module.exports.modifyEvent = async (client, eventId, gameCategoryId, eventDate, 
     return await client.query(query, params);
 }
 
-module.exports.verifyEvent = async(client, eventId, isVerify = true, adminMessage = null) => {
-    return await client.query(`
-        UPDATE event SET isVerified = $1, adminMessage = $2
-        WHERE eventId = $3`, [isVerify, adminMessage, eventId]);
+module.exports.verifyEvent = async(client, eventId, isVerify, adminMessage) => {
+    const params = [];
+    const querySet = [];
+    let query = "UPDATE event SET ";
+    if(isVerify !== undefined) {
+        params.push(isVerify);
+        querySet.push(` isVerified = $${params.length} `);
+    }
+    if(adminMessage !== undefined) {
+        params.push(adminMessage);
+        querySet.push(` adminMessage = $${params.length} `);
+    }
+    query += querySet.join(',');
+    query += `WHERE eventid = ${eventId}`;
+
+    return await client.query(query, params);
 }
 
 module.exports.eventExist = async(client, idEvent) => {

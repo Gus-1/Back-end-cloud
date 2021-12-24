@@ -669,19 +669,31 @@ module.exports.modifyEvent = async(req, res) => {
 //todo : faire son swagger
 module.exports.checkEvent = async(req, res) => {
     //Pouvoir ajouter admin note et check verified
+    let doUpdate = false;
+    let toUpdate = req.body;
+    const idToUpdate = req.params.id;
+    const newData = {};
 
-    const {adminMessage, isVerified} = req.body;
-    const eventId = req.params.id
-
-    if(adminMessage || isVerified !== undefined) {
+    if(toUpdate.adminMessage !== undefined || toUpdate.isVerified !== undefined){
+        doUpdate = true;
+    }
+    if(doUpdate){
         const client = await pool.connect();
+        newData.adminMessage = toUpdate.adminMessage;
+        newData.isVerified = toUpdate.isVerified;
+
         try{
-            await EventController.verifyEvent(client, eventId, isVerified, adminMessage);
-        } catch (e){
+            if (await EventController.eventExist(client, idToUpdate)){
+                await EventController.verifyEvent(client, idToUpdate, newData.isVerified, newData.adminMessage);
+                res.sendStatus(204);
+            } else {
+                res.sendStatus(404);
+            }
+        } catch (e) {
             console.error(e);
             res.sendStatus(500);
+        } finally {
+            client.release();
         }
-    } else {
-        res.sendStatus(400);
     }
 }
