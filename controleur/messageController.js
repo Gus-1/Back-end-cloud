@@ -186,7 +186,7 @@ module.exports.getConversation = async (req, res) => {
  *            application/json:
  *              schema:
  *                $ref: '#/components/schemas/Message'
- *      ConversationRetrievedBadRequest:
+ *      OwnerRetrievedBadRequest:
  *          description: L'id de l'évènement doit être définis
  */
 module.exports.getOwner = async(req, res) => {

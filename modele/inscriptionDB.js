@@ -2,9 +2,6 @@ module.exports.linkUserEvent = async(client, userId, eventId) => {
     return await client.query(`INSERT INTO inscription(userId, eventId) values ($1, $2)`, [userId, eventId]);
 }
 
-module.exports.deleteUserFromEvent = async(client, userId, eventId) => {
-    return await client.query(`DELETE FROM inscription WHERE eventId = $1 and userId= $2`, [eventId, userId]);
-}
 module.exports.deleteAllFromEvent = async(client, eventId) => {
     return await client.query(`DELETE FROM inscription WHERE eventId = $1`, [eventId]);
 }
@@ -13,14 +10,12 @@ module.exports.deleteInscription = async (client, inscriptionId) => {
 }
 
 module.exports.getEventFromUser = async(client, userId) => {
-    const result = await client.query(`SELECT eventId FROM inscription WHERE userId = $1`, [userId]);
-    return result;
+    return await client.query(`SELECT eventId FROM inscription WHERE userId = $1`, [userId]);
 }
 
 module.exports.getAllInscription = async(client) => {
-    const result = await client.query(`select i.*, u.firstName, u.name, e.eventDescription
+    return await client.query(`select i.*, u.firstName, u.name, e.eventDescription
         from inscription i join users u on i.userid = u.userid join event e on i.eventId = e.eventId`);
-    return result;
 }
 
 module.exports.updateEventInscription = async(client, inscriptionId, eventId, userId) => {
@@ -60,8 +55,7 @@ module.exports.inscriptionExistById = async(client, inscriptionId) => {
 }
 
 module.exports.getInscription = async (client, inscriptionId) => {
-    const result = await client.query(`SELECT * from inscription where (inscriptionid = $1)`, [inscriptionId]);
-    return result;
+    return await client.query(`SELECT * from inscription where (inscriptionid = $1)`, [inscriptionId]);
 }
 
 module.exports.unlinkUser = async(client, userId, eventId) => {

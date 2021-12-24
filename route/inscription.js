@@ -191,15 +191,8 @@ router.delete('/:id', JWTMiddleWare.identification, AuthoMiddleware.mustBeAdmin 
  *          500:
  *              description: Erreur serveur
  */
-//todo Changer le nom des fonctions, c'est n'importe quoi
-router.get('/user/:id', JWTMiddleWare.identification, InscriptionController.getInscription);
+router.get('/:id', JWTMiddleWare.identification, InscriptionController.getInscription);
 
-//todo : Peut certainement être supprimée (idem le controller)
-router.get('/exist/', InscriptionController.inscriptionExist);
-
-
-//todo : On l'utilise ?
-router.get('/:id' ,InscriptionController.getEventFromUser);
 
 /**
  * @swagger

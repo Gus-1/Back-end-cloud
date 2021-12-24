@@ -1,5 +1,4 @@
 const {getHash, compareHash} = require('../utils/utils');
-const {add} = require("nodemon/lib/rules");
 
 // UPDATE METHODS
 module.exports.modifyUser = async (client, userId, firstName, name, birthDate, password, photoPath) => {
@@ -53,26 +52,26 @@ module.exports.deleteUser = async(client, userId) => {
 
 // GET METHODS
 module.exports.getAllUsers = async(client) => {
-    const result = await client.query(`SELECT * FROM users`);
-    return result;
+    return await client.query(`SELECT * FROM users`);
 }
+
 module.exports.getUserById = async(client, userId) => {
     const result = await client.query(`SELECT * FROM users WHERE userId = $1`, [userId]);
     return result.rows;
 }
+
 async function getUsersByEmail (client, email) {
-    const result = await client.query(`SELECT * FROM users WHERE email = $1`, [email]);
-    return result.rows[0];
+    return await client.query(`SELECT * FROM users WHERE email = $1`, [email]);
 }
 module.exports.getUserByEmail = getUsersByEmail;
 
 module.exports.getUser = async(client, email, password) => {
-    const user = await getUsersByEmail(client, email);
-    if (! await compareHash(password, user.password))
+    const {rows: result} = await getUsersByEmail(client, email);
+    if (! await compareHash(password, result[0].password))
         throw new Error("Not connected");
     return {
-        userType: user.isadmin ? "admin" : "user",
-        value: user
+        userType: result.isadmin ? "admin" : "user",
+        value: result[0]
     }
 };
 

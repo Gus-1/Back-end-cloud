@@ -155,8 +155,6 @@ module.exports.unlinkUser = async (req, res) => {
  *                          - inscriptionId
  *
  */
-//todo : Nous pouvons avoir une error plus précise en indiquant que l'inscription d'existe pas
-// todo : Replaced by UnlinkUser
 module.exports.deleteUserFromEvent = async(req, res) => {
     const inscriptionId = req.params.id;
     const client = await pool.connect();
@@ -179,39 +177,6 @@ module.exports.deleteUserFromEvent = async(req, res) => {
     }
 }
 
-
-
-//todo : CHECK S'IL DOIT BIEN ETRE LA
-/**
- *@swagger
- *components:
- *  responses:
- *      EventFromUserFound:
- *          description: Renvoie un tableau d'id d'évènement auxquelles l'utilisateur est inscrit
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/Inscription'
- *      EventFromUserBadRequest:
- *          description: L'id de l'utilisateur doit être fournis
- */
-module.exports.getEventFromUser = async (req, res) => {
-    const {userId} = req.body;
-    const client = await pool.connect();
-    try {
-        const {rows: result} = await InscriptionController.getEventFromUser(client, userId);
-        if (result !== undefined){
-            res.json(result);
-        } else {
-            res.sendStatus(404);
-        }
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(500);
-    } finally {
-        client.release();
-    }
-}
 
 /**
  *@swagger
@@ -294,24 +259,6 @@ module.exports.updateEventInscription = async(req, res) => {
         }
     }
 }
-
-module.exports.inscriptionExist = async(req, res) => {
-    const {userId, eventId} = req.body;
-    const client = await pool.connect();
-    try {
-        const result = await InscriptionController.inscriptionExistByEventUser(client, userId, eventId);
-        if(result !== undefined)
-            res.json(result);
-        else
-            res.sendStatus(404)
-    } catch(e){
-        console.error(e);
-        res.sendStatus(500);
-    } finally {
-        client.release();
-    }
-}
-
 
 /**
  *@swagger

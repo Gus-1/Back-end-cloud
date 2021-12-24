@@ -313,6 +313,28 @@ module.exports.getUser = async(req, res) => {
 }
 
 
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      UserGranted:
+ *          description: Le statut de l'utilisateur a été changé
+ *      GrantUserBadRequest:
+ *          description: Tous les champs du corps de la requête doivent être définis
+ *  requestBodies:
+ *      UserToGrant:
+ *          description : Statut de l'utilisateur à mettre à jour
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          isAdmin:
+ *                              type: boolean
+ *                      required:
+ *                          - isAdmin
+ */
 module.exports.grantUser = async(req, res) => {
     const userId = req.params.id;
     const {isAdmin} = req.body;

@@ -1,14 +1,10 @@
 //GET FUNCTION
-const {rows} = require("pg/lib/defaults");
-
 module.exports.getAddress = async(client, addressId) => {
-    const result = await client.query(`SELECT * FROM address WHERE addressId = $1`, [addressId]);
-    return result;
+    return await client.query(`SELECT * FROM address WHERE addressId = $1`, [addressId]);
 }
 
 module.exports.getAllAddress = async(client) =>{
-    const result = await client.query(`SELECT * FROM address`);
-    return result;
+    return await client.query(`SELECT * FROM address`);
 }
 
 //POST FUNCTION
@@ -58,4 +54,9 @@ module.exports.deleteAddress = async (client, addressId) => {
 module.exports.deleteAddressWithEvent = async (client, eventId) => {
     return await client.query(`DELETE FROM address WHERE addressid in 
     (SELECT place from event join inscription i on event.eventid = i.eventid WHERE event.eventid = $1)`, [eventId]);
+}
+
+module.exports.addressExist = async (client, addressId) => {
+    const {rows} = await client.query(`SELECT count(addressId) AS nbr FROM address WHERE addressId = $1`, [addressId]);
+    return rows[0].nbr >0;
 }

@@ -126,7 +126,40 @@ router.delete('/:id', JWTMiddleWare.identification, eventController.deleteEvent)
  *         - $ref: '#/components/responses/UpdateEventBadRequest'
  */
 
-//todo : Faire son swagger
+/**
+ * @swagger
+ *
+ * /event/verify/{id}:
+ *  patch:
+ *      tags:
+ *          - Event
+ *      security:
+ *          - bearerAuth: []
+ *      description: Modifie un évènement
+ *      parameters:
+ *        - name: id
+ *          description: ID d'un évènement
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: integer
+ *      requestBody:
+ *          $ref: '#/components/requestBodies/EventToVerify'
+ *      responses:
+ *          204:
+ *              $ref: '#/components/responses/EventVerified'
+ *          400:
+ *              $ref: '#/components/responses/VerifyEventBadRequest'
+ *          401:
+ *              $ref: '#/components/responses/UnauthorizedJWT'
+ *          403:
+ *              $ref: '#/components/responses/mustBeAdmin'
+ *          404:
+ *              description: L'évènement n'a pas été trouvé dans la base de données
+ *          500:
+ *              description: Erreur serveur
+ */
+
 router.patch('/verify/:id', JWTMiddleWare.identification, AuthoMiddleware.mustBeAdmin, eventController.checkEvent);
 
 /**
@@ -212,9 +245,66 @@ router.patch('/:id', JWTMiddleWare.identification, eventController.modifyEvent);
 router.get('/pending/', JWTMiddleWare.identification, AuthoMiddleware.mustBeAdmin, eventController.getAllPending);
 
 
+/**
+ * @swagger
+ *
+ * /event/joined/{id}:
+ *  get:
+ *      tags:
+ *          - Event
+ *      security:
+ *          - bearerAuth: []
+ *      description: Renvoie la liste de tous les évènements
+ *      parameters:
+ *        - name: id
+ *          description: ID d'un évènement
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: integer
+ *      responses:
+ *          200:
+ *              $ref: '#/components/responses/AllJoinedEventFound'
+ *          400:
+ *              $ref: '#/components/responses/AllJoinedEventBadRequest'
+ *          401:
+ *              $ref: '#/components/responses/UnauthorizedJWT'
+ *          404:
+ *              description: Les évènements n'ont pas été trouvées
+ *          500:
+ *              description: Erreur serveur
+ */
 router.get('/joined/:id', JWTMiddleWare.identification, eventController.getAllJoinedEvent);
 
-
+/**
+ * @swagger
+ *
+ * /event/user/{id}:
+ *  get:
+ *      tags:
+ *          - Event
+ *      security:
+ *          - bearerAuth: []
+ *      description: Renvoie la liste de tous les évènements d'un utilisateur
+ *      parameters:
+ *        - name: id
+ *          description: ID d'un évènement
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: integer
+ *      responses:
+ *          200:
+ *              $ref: '#/components/responses/AllEventByUserFound'
+ *          400:
+ *              $ref: '#/components/responses/AllEventByUserBadRequest'
+ *          401:
+ *              $ref: '#/components/responses/UnauthorizedJWT'
+ *          404:
+ *              description: Les évènements n'ont pas été trouvées
+ *          500:
+ *              description: Erreur serveur
+ */
 router.get('/user/:id', JWTMiddleWare.identification, eventController.getAllEventByUser);
 
 /**
@@ -242,7 +332,7 @@ router.get('/user/:id', JWTMiddleWare.identification, eventController.getAllEven
  *          401:
  *              $ref: '#/components/responses/UnauthorizedJWT'
  *          404:
- *              description: L'établissement n'a pas été trouvé
+ *              description: L'évènement n'a pas été trouvé
  *          500:
  *              description: Erreur serveur
  */

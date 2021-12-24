@@ -85,8 +85,6 @@ module.exports.insertCategory = async (req, res) => {
  *                      required:
  *                          - gameCategoryId
  */
-//content deleted
-
 // La suppression d'une catégorie supprime aussi les évènements lié.
 // Justification : Si une catégorie pose problème, nous supprimons donc tous les évènements qui y sont liés
 module.exports.deleteCategory = async (req, res) => {
@@ -123,7 +121,6 @@ module.exports.deleteCategory = async (req, res) => {
  *              schema:
  *                $ref: '#/components/schemas/GameCategory'
  */
-//J'ai retiré la bad request
 module.exports.getAllCategory = async(req, res) => {
     const client = await pool.connect();
     try{

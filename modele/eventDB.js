@@ -1,6 +1,6 @@
 //GET FUNCTION
 module.exports.getAllEvent = async(client) => {
-    const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
+    return await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
                                               u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
                                               g.gamecategoryid, g.label, g.description,
                                               a.addressid, a.street, a.number, a.city, a.postalcode, a.country
@@ -8,11 +8,10 @@ module.exports.getAllEvent = async(client) => {
                                                 join users u on e.creatorid = u.userid
                                                 join gamecategory g on e.gamecategoryid = g.gamecategoryid
                                                 join address a on e.place = a.addressid `);
-    return result;
 }
 
 module.exports.getEvent = async(client, eventId) => {
-    const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
+    return await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
                                               u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
                                               g.gamecategoryid, g.label, g.description,
                                               a.addressid, a.street, a.number, a.city, a.postalcode, a.country
@@ -22,7 +21,6 @@ module.exports.getEvent = async(client, eventId) => {
                                                 join address a on e.place = a.addressid
                                        WHERE eventid = $1
     `, [eventId]);
-    return result;
 }
 module.exports.getCreator = async(client, eventId) => {
     const result = await client.query(`SELECT event.creatorId, event.eventId, user.userId FROM event JOIN user ON creatorId = userId 
@@ -34,7 +32,7 @@ module.exports.getEventOwner = async(client, eventId) => {
     return result.rows[0].creatorid;
 }
 module.exports.getAllEventByUser = async(client, userId) => {
-    const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
+    return await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
                                               u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
                                               g.gamecategoryid, g.label, g.description,
                                               a.addressid, a.street, a.number, a.city, a.postalcode, a.country
@@ -43,10 +41,9 @@ module.exports.getAllEventByUser = async(client, userId) => {
                                                 join gamecategory g on e.gamecategoryid = g.gamecategoryid
                                                 join address a on e.place = a.addressid
                                        WHERE u.userId = $1`, [userId]);
-    return result;
 }
 module.exports.getAllJoinedEvent = async(client, userId) =>{
-    const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
+    return await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
                                               u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
                                               g.gamecategoryid, g.label, g.description,
                                               a.addressid, a.street, a.number, a.city, a.postalcode, a.country
@@ -56,11 +53,10 @@ module.exports.getAllJoinedEvent = async(client, userId) =>{
                                                 join users u on e.creatorid = u.userid
                                                 join gamecategory g on e.gamecategoryid = g.gamecategoryid
                                         WHERE i.userid = $1`, [userId]);
-    return result;
 }
 
 module.exports.getAllPending = async(client) => {
-    const result = await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
+    return await client.query(`select e.eventid, e.creationdate, e.eventdate, e.eventdescription, e.isverified, e.nbmaxplayer, e.adminmessage,
                                               u.userid, u.firstname, u.name, u.birthdate, u.isadmin, u.email, u.photopath,
                                               g.gamecategoryid, g.label, g.description,
                                               a.addressid, a.street, a.number, a.city, a.postalcode, a.country
@@ -69,7 +65,6 @@ module.exports.getAllPending = async(client) => {
                                                 join gamecategory g on e.gamecategoryid = g.gamecategoryid
                                                 join address a on e.place = a.addressid
                                        WHERE isverified = false`);
-    return result;
 }
 
 
@@ -85,8 +80,7 @@ module.exports.insertEvent = async (client, userId, gameCategoryId, date, place,
 
 //DELETE FUNCTION
 module.exports.deleteEvent = async(client, eventId) => {
-    return await client.query(`
-        DELETE FROM event WHERE eventId = $1`, [eventId]);
+    return await client.query(`DELETE FROM event WHERE eventId = $1`, [eventId]);
 }
 module.exports.deleteUsersEvent = async(client, userId) => {
     await client.query(`DELETE FROM event WHERE creatorid = $1`, [userId]);

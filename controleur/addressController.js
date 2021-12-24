@@ -92,7 +92,6 @@ module.exports.insertAddress = async(req, res) => {
  *              schema:
  *                $ref: '#/components/schemas/Address'
  */
-//J'ai enlevé la bad request
 module.exports.getAllAddress = async(req, res) => {
     const client = await pool.connect();
     try{
@@ -123,7 +122,6 @@ module.exports.getAllAddress = async(req, res) => {
  *      getAddressBadRequest:
  *          description: L'id fournie doit être définie
  */
-
 module.exports.getAddress = async(req, res) => {
     const addressId = req.params.id;
     const client = await pool.connect();
@@ -155,13 +153,16 @@ module.exports.getAddress = async(req, res) => {
  *      DeleteAddressBadRequest:
  *          description: l'id de l'adresse doit être fourni
  */
-
 module.exports.deleteAddress = async (req, res) => {
     const addressId = req.params.id;
     const client = await pool.connect();
     try{
-        await AddressController.deleteAddress(client, addressId);
-        res.sendStatus(204);
+        if(AddressController.addressExist(client, addressId)){
+            await AddressController.deleteAddress(client, addressId);
+            res.sendStatus(204);
+        } else {
+            res.sendStatus(404);
+        }
     } catch(e){
         console.error(e);
         res.sendStatus(403);
@@ -221,9 +222,13 @@ module.exports.updateAddress = async(req, res) => {
         newData.postCode = toUpdate.postCode;
         newData.country = toUpdate.country;
         try{
-            await AddressController.updateAddress(client, addressId ,newData.street, newData.number, newData.city, newData.postCode,
-                newData.country);
-            res.sendStatus(204);
+            if (AddressController.addressExist(client, addressId)){
+                await AddressController.updateAddress(client, addressId ,newData.street, newData.number, newData.city, newData.postCode,
+                    newData.country);
+                res.sendStatus(204);
+            } else {
+                res.sendStatus(404);
+            }
         } catch (e) {
             console.error(e);
             res.sendStatus(500);

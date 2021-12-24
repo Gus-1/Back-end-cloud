@@ -20,12 +20,10 @@ module.exports.modifyMessage = async(client, messageId, content) => {
 
 //GET METHODS
 module.exports.getConversation = async(client, eventId) => {
-    const result = await client.query(`SELECT * FROM message WHERE eventId = $1 ORDER BY date ASC`, [eventId]);
-    return result;
+    return await client.query(`SELECT * FROM message WHERE eventId = $1 ORDER BY date ASC`, [eventId]);
 }
 module.exports.getOwnerMessage = async(client, messageId) => {
-    const result =  await client.query(`SELECT messageId, sendId FROM message WHERE messageId = $1`, [messageId]);
-    return result;
+    return await client.query(`SELECT messageId, sendId FROM message WHERE messageId = $1`, [messageId]);
 }
 
 module.exports.messageExist = async(client, messageId) => {

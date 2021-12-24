@@ -1,12 +1,10 @@
 //GET METHODS
 module.exports.getAllCategory = async(client) => {
-    const result = await client.query(`SELECT * FROM gameCategory`);
-    return result;
+    return await client.query(`SELECT * FROM gameCategory`);
 }
 
 module.exports.getCategoryById = async(client, categoryId) => {
-    const result = await client.query(`SELECT * FROM gameCategory WHERE gameCategoryId = $1`, [categoryId]);
-    return result;
+    return await client.query(`SELECT * FROM gameCategory WHERE gameCategoryId = $1`, [categoryId]);
 }
 
 //UPDATE METHODS

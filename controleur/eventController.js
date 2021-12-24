@@ -3,7 +3,6 @@ const AddressController = require('../modele/addressDB');
 const MessageController = require('../modele/messageDB');
 const InscriptionController = require('../modele/inscriptionDB');
 const pool = require('../modele/database');
-const {add} = require("nodemon/lib/rules");
 
 
 /**
@@ -463,7 +462,6 @@ module.exports.getAllJoinedEvent = async(req, res) => {
  *              schema:
  *                $ref: '#/components/schemas/Event'
  */
-// J'ai viré le bad request
 module.exports.getAllPending = async(req, res) => {
     const client = await pool.connect();
     try{
@@ -598,8 +596,6 @@ module.exports.getEventOwner = async (req, res) => {
  */
 
 module.exports.modifyEvent = async(req, res) => {
-    //todo : Check pourquoi le place se balade seul
-
     const reqId = req.session.id
     let doUpdateEvent = false;
     let doUpdateAddress = false;
@@ -666,7 +662,31 @@ module.exports.modifyEvent = async(req, res) => {
 
 
 
-//todo : faire son swagger
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      EventVerified:
+ *          description: L'évènement a été vérifié
+ *      VerifyEventBadRequest:
+ *          description: Tous les champs du corps de la requête doivent être définis
+ *  requestBodies:
+ *      EventToVerify:
+ *          description : L'évènement à vérifier
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          adminMessage:
+ *                              type: string
+ *                          isVerified:
+ *                              type: boolean
+ *                      required:
+ *                          - adminMessage
+ *                          - isVerified
+ */
+
 module.exports.checkEvent = async(req, res) => {
     //Pouvoir ajouter admin note et check verified
     let doUpdate = false;
