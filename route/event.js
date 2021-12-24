@@ -126,6 +126,9 @@ router.delete('/:id', JWTMiddleWare.identification, eventController.deleteEvent)
  *         - $ref: '#/components/responses/UpdateEventBadRequest'
  */
 
+//todo : Faire son swagger
+router.patch('/verify/:id', JWTMiddleWare.identification, AuthoMiddleware.mustBeAdmin, eventController.checkEvent);
+
 /**
  * @swagger
  *

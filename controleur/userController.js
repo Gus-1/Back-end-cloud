@@ -7,6 +7,35 @@ require("dotenv").config();
 /**
  * @swagger
  * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         userId:
+ *           type: integer
+ *         firstName:
+ *           type : string
+ *         name:
+ *           type: string
+ *         birthDate:
+ *           type: string
+ *           format: date
+ *         isAdmin:
+ *           type: boolean
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
+ *           format: password
+ *         photoPath:
+ *           type: string
+ */
+
+
+
+/**
+ * @swagger
+ * components:
  *  schemas:
  *      Login:
  *          type: object
@@ -46,6 +75,44 @@ module.exports.login = async (req, res) => {
     }
 }
 
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      UserAdded:
+ *          description: L'utilisateur a été ajouté
+ *      AddUserBadRequest:
+ *          description: Tous les champs du corps de la requête doivent être définis
+ *  requestBodies:
+ *      UserToAdd:
+ *          description : Utilisateur à ajouter
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          firstname:
+ *                              type: string
+ *                          lastname:
+ *                              type: string
+ *                              format: password
+ *                          birthdate:
+ *                              type: string
+ *                          email:
+ *                              type: string
+ *                          password:
+ *                              type: string
+ *                              format: date
+ *                          photopath:
+ *                             type: string
+ *                      required:
+ *                          - firstname
+ *                          - lastname
+ *                          - birthdate
+ *                          - email
+ *                          - password
+ *                          - photopath
+ */
 module.exports.addUser = async (req, res) => {
     const {firstname, lastname, birthdate, email, password, photopath} = req.body;
     if(firstname === undefined || lastname === undefined || birthdate === undefined || email === undefined || password === undefined
@@ -68,6 +135,16 @@ module.exports.addUser = async (req, res) => {
     }
 }
 
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      UserDeleted:
+ *          description: L'utilisateur a été supprimée
+ *      DeleteUserBadRequest:
+ *          description: L'id de l'utilisateur doit être définit
+ */
 module.exports.deleteUser = async(req, res) => {
     const id = req.params.id;
     if(isNaN(id)){
@@ -95,6 +172,42 @@ module.exports.deleteUser = async(req, res) => {
     }
 }
 
+
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      UserUpdated:
+ *          description: L'utilisateur a été modifié
+ *      UpdateUserBadRequest:
+ *          description: Tous les champs du corps de la requête doivent être définis
+ *  requestBodies:
+ *      UserToUpdate:
+ *          description : Utilisateur à mettre à jour
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          firstname:
+ *                              type: string
+ *                          lastname:
+ *                              type: string
+ *                          birthdate:
+ *                              type: string
+ *                              format: date
+ *                          password:
+ *                              type: string
+ *                          photopath:
+ *                              type: string
+ *                      required:
+ *                          - firstname
+ *                          - lastname
+ *                          - birthdate
+ *                          - password
+ *                          - photopath
+ */
 module.exports.modifyUser = async(req, res) => {
     let doUpdate = false;
     let toUpdate = req.body;
@@ -136,6 +249,18 @@ module.exports.modifyUser = async(req, res) => {
 }
 
 
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      AllUserFound:
+ *          description: Renvoie tous les utilisateurs présents dans la base de donnée
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/User'
+ */
 module.exports.getAllUsers = async(req, res) => {
     const client = await pool.connect();
     try{
@@ -152,6 +277,20 @@ module.exports.getAllUsers = async(req, res) => {
     }
 }
 
+
+/**
+ *@swagger
+ *components:
+ *  responses:
+ *      UserFound:
+ *          description: Renvoie un utilisateur
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/User'
+ *      UserRetrievedBadRequest:
+ *          description: L'id de l'utilisateur doit être fournit
+ */
 module.exports.getUser = async(req, res) => {
     const userId = req.params.id;
     if(isNaN(userId)){

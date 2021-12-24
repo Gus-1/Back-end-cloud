@@ -55,28 +55,46 @@ const {add} = require("nodemon/lib/rules");
  *                  schema:
  *                      type: object
  *                      properties:
- *                          creatorId:
+ *                          creatorid:
  *                              type: integer
- *                          gameCategoryId:
- *                              type: integer
- *                          creationDate:
+ *                          gamecategory:
+ *                              type: object
+ *                              properties:
+ *                                gamecategoryid:
+ *                                  type: integer
+ *                                label:
+ *                                  type: string
+ *                                description:
+ *                                  type: string
+ *                          eventdate:
  *                              type: string
  *                              format: date
- *                          eventDate:
- *                              type: string
- *                              format: date
- *                          place:
- *                              type: integer
+ *                          address:
+ *                              type: object
+ *                              properties:
+ *                                street:
+ *                                  type: string
+ *                                number:
+ *                                  type: integer
+ *                                country:
+ *                                  type: string
+ *                                city:
+ *                                  type: string
+ *                                postalCode:
+ *                                  type: integer
  *                          eventDescription:
  *                             type: string
  *                          nbMaxPlayer:
  *                              type: integer
  *                      required:
- *                          - creatorId
- *                          - gameCategoryId
+ *                          - gamecategoryid
  *                          - creationDate
  *                          - eventDate
- *                          - place
+ *                          - street
+ *                          - number
+ *                          - country
+ *                          - city
+ *                          - postalcode
  *                          - eventDescription
  *                          - nbMaxPlayer
  */
@@ -589,7 +607,7 @@ module.exports.modifyEvent = async(req, res) => {
     const eventId = req.params.id;
     const newData = {};
 
-    if (toUpdate.eventDate !== undefined || toUpdate.place !== undefined || toUpdate.eventDescription !== undefined ||
+    if (toUpdate.eventDate !== undefined || toUpdate.eventDescription !== undefined ||
         toUpdate.nbMaxPlayer !== undefined || toUpdate.gameCategoryId !== undefined) {
         doUpdateEvent = true;
     }
@@ -640,6 +658,28 @@ module.exports.modifyEvent = async(req, res) => {
             res.sendStatus(500)
         }finally {
             client.release();
+        }
+    } else {
+        res.sendStatus(400);
+    }
+}
+
+
+
+//todo : faire son swagger
+module.exports.checkEvent = async(req, res) => {
+    //Pouvoir ajouter admin note et check verified
+
+    const {adminMessage, isVerified} = req.body;
+    const eventId = req.params.id
+
+    if(adminMessage || isVerified !== undefined) {
+        const client = await pool.connect();
+        try{
+            await EventController.verifyEvent(client, eventId, isVerified, adminMessage);
+        } catch (e){
+            console.error(e);
+            res.sendStatus(500);
         }
     } else {
         res.sendStatus(400);

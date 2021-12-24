@@ -122,7 +122,7 @@ module.exports.modifyEvent = async (client, eventId, gameCategoryId, eventDate, 
 
 module.exports.verifyEvent = async(client, eventId, isVerify = true, adminMessage = null) => {
     return await client.query(`
-        UPDATE event SET isVerify = $1, adminMessage = $2
+        UPDATE event SET isVerified = $1, adminMessage = $2
         WHERE eventId = $3`, [isVerify, adminMessage, eventId]);
 }
 
