@@ -84,7 +84,7 @@ router.post('/', JWTMiddleWare.identification,InscriptionController.linkUserEven
  * @swagger
  *
  * /inscription:
- *  delete :
+ *  post :
  *      tags:
  *          - Inscription
  *      security:
@@ -104,7 +104,8 @@ router.post('/', JWTMiddleWare.identification,InscriptionController.linkUserEven
  *          500:
  *              description: Erreur serveur
  */
-router.delete('/unlink/', JWTMiddleWare.identification,InscriptionController.unlinkUser);
+//utilisée uniquement pour Android. Cas particulier
+router.post('/unlink/', JWTMiddleWare.identification,InscriptionController.unlinkUser);
 
 
 /**

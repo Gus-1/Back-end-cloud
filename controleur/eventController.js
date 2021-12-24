@@ -82,18 +82,18 @@ const {add} = require("nodemon/lib/rules");
  */
 
 module.exports.insertEvent = async (req, res) => {
-    const {creatorId, gameCategoryId, eventDate, eventDescription, nbMaxPlayer, street, number, city,
-        postalCode, country} = req.body;
-    if(creatorId === undefined || gameCategoryId === undefined || eventDate === undefined || eventDescription === undefined ||
-     nbMaxPlayer === undefined || street === undefined || number === undefined || city === undefined || postalCode === undefined ||
-     country === undefined) {
+    const {gamecategory, eventdate, eventdescription, nbmaxplayer, address} = req.body;
+    const creatorId = req.body.creatorid ?? req.session.userid;
+
+    if(!gamecategory || !gamecategory.gamecategoryid || !eventdate || !eventdescription || !nbmaxplayer || !address || !address.street || !address.number || !address.city
+        || !address.postalcode || !address.country) {
         res.sendStatus(400);
     } else {
         const client = await pool.connect();
         try{
             await client.query("BEGIN");
-            const addressId = await AddressController.insertAddress(client, street, number, city, postalCode, country);
-            await EventController.insertEvent(client, creatorId, gameCategoryId, eventDate, addressId, eventDescription, nbMaxPlayer);
+            const addressId = await AddressController.insertAddress(client, address.street, address.number, address.city, address.postalcode, address.country);
+            await EventController.insertEvent(client, creatorId, gamecategory.gamecategoryid, eventdate, addressId, eventdescription, nbmaxplayer);
             await client.query("COMMIT");
             res.sendStatus(201);
         } catch (e){
